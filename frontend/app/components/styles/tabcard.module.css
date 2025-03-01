@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  background-color: gray;
+  padding: 2px 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 18px;
+}
+
+.tab-card-header {
+  display: flex;
+  flex-direction: row;
+  width: auto;
+  gap: 10px;
+}
+
+.tab-card-title {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  display: inline;
+  color: white;
+}
