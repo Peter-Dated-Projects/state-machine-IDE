@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+*/node_modules
+*/.next
 /.pnp
 .pnp.*
 .yarn/*
@@ -13,6 +15,7 @@
 # testing
 /coverage
 
+#env file
 .env
 
 # next.js
