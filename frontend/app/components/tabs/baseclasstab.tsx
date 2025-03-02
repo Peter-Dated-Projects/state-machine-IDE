@@ -5,13 +5,17 @@ import Editor from "@monaco-editor/react";
 import { TabInfoProps } from "../sidebar";
 import { SUPPORTED_LANGUAGES, DEFAULT_CLASS_TEXT } from "./tabinformation";
 
+// ------------------------------------------ //
+// base class input props
+// ------------------------------------------ //
 interface BaseClassTabProps {
   props: TabInfoProps;
 }
 
+// ------------------------------------------ //
+// object
+// ------------------------------------------ //
 const BaseClassTab = ({ props }: BaseClassTabProps) => {
-  const [classVariables, setClassVariables] = React.useState([]);
-
   // is saved or not saved
   const [isSaved, setIsSaved] = React.useState(true);
 
@@ -19,8 +23,12 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
     const handleSave = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key === "s") {
         event.preventDefault();
-        console.log("saved file");
         setIsSaved(true);
+
+        // console.log("sending request parsing signal");
+
+        // send information to backend and retrieve active variables
+        window.dispatchEvent(new CustomEvent("requestparsing"));
       }
     };
 
@@ -66,6 +74,11 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
               props.baseClassCode.setter(value || "");
               setIsSaved(false);
             }}
+            onMount={(editor) => {
+              editor.focus();
+              props.baseClassCode.setter(editor.getValue());
+              window.dispatchEvent(new CustomEvent("requestparsing"));
+            }}
           />
         </div>
       </div>
@@ -79,12 +92,12 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
           </div>
           <div className={styles["class-variables-container"]}>
             {/* a section for class variables */}
-            test
             <div>
-              {classVariables.map((variable) => (
-                <div key={variable.name}>
-                  <div>{variable.name}</div>
-                  <div>{variable.type}</div>
+              {props.baseClassVariables.getter.map((variable, index) => (
+                <div key={index} className={styles["class-variable"]}>
+                  <div>
+                    <span>self.{variable.name}</span>
+                  </div>
                 </div>
               ))}
             </div>
