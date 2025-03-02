@@ -7,13 +7,11 @@ import styles from "./styles/sidebar.module.css";
 import TabCard from "./tabcard";
 import React from "react";
 
-interface SideBarProps {
-  width: number;
-}
+import { StateManagerProps } from "../page";
+import { SharedProgramData } from "../page";
 
-interface StateManagerProps<T> {
-  getter: T;
-  setter: (value: T) => void;
+interface SideBarProps {
+  props: SharedProgramData;
 }
 
 export interface TabInfoProps {
@@ -22,7 +20,7 @@ export interface TabInfoProps {
 }
 
 // side bar object
-const SideBar: React.FC<SideBarProps> = () => {
+const SideBar = ({ props }: SideBarProps) => {
   const [activeTab, setActiveTab] = React.useState(0);
 
   // tab state variables
@@ -62,6 +60,12 @@ const SideBar: React.FC<SideBarProps> = () => {
                 <TabCard key={index} title={tab} />
               </div>
             ))}
+          </div>
+        </div>
+        <div className={`${styles["container-grid-item"]} ${styles["sidebar-node-info"]}`}>
+          <div style={{ paddingLeft: "5px" }}>
+            <b>Current Node: </b>
+            {props.selectedNode.getter ? props.selectedNode.getter.name : "Not Selected"}
           </div>
         </div>
         <div className={styles["container-grid-item"]} style={{ flex: 1 }}>

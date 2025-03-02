@@ -10,7 +10,7 @@
 .container-grid {
   display: grid;
   height: 100%;
-  grid-template-rows: 35px auto;
+  grid-template-rows: 35px 35px auto;
   gap: 10px;
 }
 
@@ -27,4 +27,16 @@
   padding: 5px;
   align-items: last baseline;
   justify-content: left;
+}
+
+.sidebar-node-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  justify-content: last baseline;
+  align-items: left;
+
+  font-size: 15px;
 }
