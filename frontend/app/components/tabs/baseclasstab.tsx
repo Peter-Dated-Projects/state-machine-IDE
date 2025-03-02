@@ -96,7 +96,7 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
               {props.baseClassVariables.getter.map((variable, index) => (
                 <div key={index} className={styles["class-variable"]}>
                   <div>
-                    <span>self.{variable.name}</span>
+                    <span>self.{variable.name}</span> = <span>{variable.value}</span>
                   </div>
                 </div>
               ))}

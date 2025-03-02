@@ -16,12 +16,17 @@ interface SideBarProps {
   props: SharedProgramData;
 }
 
+interface BackendQueryVariable {
+  name: string;
+  value: string;
+}
+
 // ------------------------------------------ //
 
 export interface TabInfoProps {
   baseClassCode: StateManagerProps<string>;
   baseClassLanguage: StateManagerProps<string>;
-  baseClassVariables: StateManagerProps<string[]>;
+  baseClassVariables: StateManagerProps<BackendQueryVariable[]>;
 }
 
 // ------------------------------------------ //
@@ -32,7 +37,7 @@ const SideBar = ({ props }: SideBarProps) => {
   // tab state variables
   const [baseClassCode, setBaseClassCode] = React.useState("");
   const [baseClassLanguage, setBaseClassLanguage] = React.useState("python");
-  const [baseClassVariables, setBaseClassVariables] = React.useState<string[]>([]);
+  const [baseClassVariables, setBaseClassVariables] = React.useState<BackendQueryVariable[]>([]);
   const [readyToParse, setReadyToParse] = React.useState(false);
 
   // ------------------------------------------ //
