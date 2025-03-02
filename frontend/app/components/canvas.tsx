@@ -29,7 +29,6 @@ export default function CanvasWindow() {
                 className={"flow-container"}
                 style={{ height: "100%", width: "100%" }}
             >
-                {/* <h1 className={"header"}>Canvas</h1> */}
                 <ReactFlow
                     colorMode="dark"
                     nodes={nodes}
