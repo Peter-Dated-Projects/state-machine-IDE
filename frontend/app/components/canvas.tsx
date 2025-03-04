@@ -1,7 +1,9 @@
 "use client";
 
-import "./styles/canvas.module.css";
+import styles from "./styles/canvas.module.css";
+
 import "@xyflow/react/dist/style.css";
+
 import {
   ReactFlow,
   Background,
@@ -12,31 +14,49 @@ import {
   useEdgesState,
   type OnConnect,
 } from "@xyflow/react";
-import { initialNodes, nodeTypes } from "./nodes";
+
+import { defaultStarterNodes, nodeTypes } from "./nodes";
 import { initialEdges, edgeTypes } from "./edges";
 import { useCallback } from "react";
-
 import { SharedProgramData } from "../page";
 
-    return (
-        <div className={"canvas"} style={{ height: "100%" }}>
-            <h1>Canvas</h1>
-            <div className={"flow-container"} style={{ height: "100%" }}>
-                <ReactFlow
-                    nodes={nodes}
-                    nodeTypes={nodeTypes}
-                    onNodesChange={onNodesChange}
-                    edges={edges}
-                    edgeTypes={edgeTypes}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
-                    fitView
-                >
-                    <Background />
-                    <MiniMap />
-                    <Controls />
-                </ReactFlow>
-            </div>
-        </div>
-    );
+// interface
+interface CanvasProps {
+  props: SharedProgramData;
+}
+
+// object
+export default function CanvasWindow({ props }: CanvasProps) {
+  // variables
+  const [nodes, , onNodesChange] = useNodesState(defaultStarterNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  // function
+  const onConnect: OnConnect = useCallback(
+    (connection) => setEdges((edges) => addEdge(connection, edges)),
+    [setEdges]
+  );
+
+  return (
+    <div className={styles.canvas}>
+      <h1>Canvas</h1>
+      <div className={styles["flow-container"]}>
+        <ReactFlow
+          nodes={nodes}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          edges={edges}
+          edgeTypes={edgeTypes}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          fitView
+          colorMode="dark" // please never turn this to light mode EVER AGAIN i swear plApw ldkapwld
+        >
+          <Background />
+          <MiniMap />
+          <Controls />
+        </ReactFlow>
+      </div>
+    </div>
+  );
 }

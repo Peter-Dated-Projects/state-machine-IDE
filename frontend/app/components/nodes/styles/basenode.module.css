@@ -1,0 +1,12 @@
+.container {
+  height: auto;
+  text-align: left;
+  justify-content: left;
+
+  /* font related things */
+  font-size: 5px;
+}
+
+.content-container {
+  padding: 5px;
+}
