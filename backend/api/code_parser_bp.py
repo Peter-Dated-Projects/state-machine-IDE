@@ -21,6 +21,7 @@ BASE_STATE_CLASSNAME = "BaseState"
 
 @code_parser_bp.route("/code-parser", methods=["POST"])
 def code_parser():
+
     data = request.get_json()
     language = data.get("language")
     code = data.get("code")

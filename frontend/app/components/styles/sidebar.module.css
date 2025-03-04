@@ -10,12 +10,12 @@
 .container-grid {
   display: grid;
   height: 100%;
-  grid-template-rows: 50px auto;
+  grid-template-rows: 35px 35px auto;
   gap: 10px;
 }
 
 .container-grid-item {
-  padding: 5px;
+  padding: 2px;
   background-color: rgba(0, 104, 64, 0.5);
 }
 
@@ -23,9 +23,20 @@
   display: flex;
   flex-direction: row;
   width: 100%;
+  height: 30px;
+  padding: 5px;
+  align-items: last baseline;
+  justify-content: left;
+}
+
+.sidebar-node-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   height: 100%;
   padding: 5px;
-  align-items: center;
-  justify-content: left;
-  border-radius: 5px;
+  justify-content: last baseline;
+  align-items: left;
+
+  font-size: 15px;
 }

@@ -3,26 +3,20 @@
 import "./styles/canvas.module.css";
 import "@xyflow/react/dist/style.css";
 import {
-    ReactFlow,
-    Background,
-    Controls,
-    MiniMap,
-    addEdge,
-    useNodesState,
-    useEdgesState,
-    type OnConnect,
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+  type OnConnect,
 } from "@xyflow/react";
 import { initialNodes, nodeTypes } from "./nodes";
 import { initialEdges, edgeTypes } from "./edges";
 import { useCallback } from "react";
 
-export default function CanvasWindow() {
-    const [nodes, , onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const onConnect: OnConnect = useCallback(
-        (connection) => setEdges((edges) => addEdge(connection, edges)),
-        [setEdges]
-    );
+import { SharedProgramData } from "../page";
 
     return (
         <div className={"canvas"} style={{ height: "100%" }}>
