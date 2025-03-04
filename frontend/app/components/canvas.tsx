@@ -1,4 +1,5 @@
 "use client";
+
 import "./styles/canvas.module.css";
 import "@xyflow/react/dist/style.css";
 import {
@@ -24,13 +25,10 @@ export default function CanvasWindow() {
     );
 
     return (
-        <div className={"canvas"} style={{ height: "100%", width: "100%" }}>
-            <div
-                className={"flow-container"}
-                style={{ height: "100%", width: "100%" }}
-            >
+        <div className={"canvas"} style={{ height: "100%" }}>
+            <h1>Canvas</h1>
+            <div className={"flow-container"} style={{ height: "100%" }}>
                 <ReactFlow
-                    colorMode="dark"
                     nodes={nodes}
                     nodeTypes={nodeTypes}
                     onNodesChange={onNodesChange}
@@ -40,7 +38,6 @@ export default function CanvasWindow() {
                     onConnect={onConnect}
                     fitView
                 >
-                    <h1 className="header">Canvas</h1>
                     <Background />
                     <MiniMap />
                     <Controls />
