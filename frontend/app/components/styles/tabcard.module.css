@@ -1,16 +1,11 @@
 .container {
   display: flex;
-  background-color: gray;
-  padding: 2px 5px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 18px;
-}
-
-.tab-card-header {
-  display: flex;
   flex-direction: row;
   width: auto;
   gap: 10px;
+  padding: 2px 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 18px;
 }
 
 .tab-card-title {
@@ -19,4 +14,24 @@
   padding: 0;
   display: inline;
   color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.active-container {
+  color: #fff;
+  background-color: #007bff;
+  padding: 5px 10px;
+  border-radius: 15px;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+.inactive-container {
+  background-color: gray;
+}
+
+.container:hover {
+  background-color: #555;
+  border-radius: 5px;
+  padding: 5px 10px;
 }

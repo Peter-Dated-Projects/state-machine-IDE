@@ -38,8 +38,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
   );
 
   return (
-    <div className={styles.canvas}>
-      <h1>Canvas</h1>
+    <div className={styles.container}>
       <div className={styles["flow-container"]}>
         <ReactFlow
           nodes={nodes}
@@ -50,8 +49,12 @@ export default function CanvasWindow({ props }: CanvasProps) {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           fitView
-          colorMode="dark" // please never turn this to light mode EVER AGAIN i swear plApw ldkapwld
+          colorMode="dark"
         >
+          {/* controls inside canvas */}
+          {/* <div className={styles.controls}>
+            <h1 className={styles.header}>Canvas</h1>
+          </div> */}
           <Background />
           <MiniMap />
           <Controls />

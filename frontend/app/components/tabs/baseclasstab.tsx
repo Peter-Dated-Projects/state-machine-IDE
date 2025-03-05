@@ -49,7 +49,12 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
           </div>
           <div className={styles["code-editor-language-selector"]}>
             <svg height="17" width="17" style={{ alignSelf: "center" }}>
-              <circle cx="8.5" cy="8.5" r="8" fill={isSaved ? "green" : "red"} />
+              <circle
+                cx="8.5"
+                cy="8.5"
+                r="8"
+                fill={isSaved ? "green" : "red"}
+              />
             </svg>
             <select
               value={props.baseClassLanguage.getter}
@@ -66,6 +71,7 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
         <div className="code-editor-container">
           <Editor
             height="40vh"
+            width={props.editorWidth.getter}
             language={props.baseClassLanguage.getter}
             value={props.baseClassCode.getter}
             defaultValue={DEFAULT_CLASS_TEXT}
@@ -96,7 +102,8 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
               {props.baseClassVariables.getter.map((variable, index) => (
                 <div key={index} className={styles["class-variable"]}>
                   <div>
-                    <span>self.{variable.name}</span> = <span>{variable.value}</span>
+                    <span>self.{variable.name}</span> ={" "}
+                    <span>{variable.value}</span>
                   </div>
                 </div>
               ))}

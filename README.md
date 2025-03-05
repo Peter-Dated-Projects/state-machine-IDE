@@ -55,7 +55,3 @@ lets you edit state machines programmatically easily hehehehehheee
    cd ../backend
    python app.py
    ```
-
-## Contributing
-
-Contributions are welcome! Feel free to open an issue or submit a pull request.

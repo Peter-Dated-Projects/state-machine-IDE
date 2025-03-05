@@ -5,6 +5,7 @@ import { TabInfoProps } from "../sidebar";
 import { SUPPORTED_LANGUAGES } from "./tabinformation";
 
 import React from "react";
+import { useState, useEffect } from "react";
 import { Editor } from "@monaco-editor/react";
 
 interface NodeEditorTabProps {
@@ -13,10 +14,10 @@ interface NodeEditorTabProps {
 
 // object
 function NodeEditorTab({ props }: NodeEditorTabProps) {
-  const [classVariables, setClassVariables] = React.useState([]);
-  const [isSaved, setIsSaved] = React.useState(true);
+  const [classVariables, setClassVariables] = useState([]);
+  const [isSaved, setIsSaved] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleSave = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key === "s") {
         event.preventDefault();
@@ -42,7 +43,12 @@ function NodeEditorTab({ props }: NodeEditorTabProps) {
           </div>
           <div className={baseclassstyles["code-editor-language-selector"]}>
             <svg height="17" width="17" style={{ alignSelf: "center" }}>
-              <circle cx="8.5" cy="8.5" r="8" fill={isSaved ? "green" : "red"} />
+              <circle
+                cx="8.5"
+                cy="8.5"
+                r="8"
+                fill={isSaved ? "green" : "red"}
+              />
             </svg>
             <select
               value={props.baseClassLanguage.getter}
@@ -63,6 +69,7 @@ function NodeEditorTab({ props }: NodeEditorTabProps) {
             <div className="code-editor-container">
               <Editor
                 height="40vh"
+                width={props.editorWidth.getter}
                 language={props.baseClassLanguage.getter}
                 value={props.baseClassCode.getter}
                 theme="vs-dark"
@@ -74,8 +81,8 @@ function NodeEditorTab({ props }: NodeEditorTabProps) {
             </div>
           }
           <p>
-            Someitmes we don&apos;t want to display the editor. Therefore we must create an emtpy
-            div of equal height
+            Someitmes we don&apos;t want to display the editor. Therefore we
+            must create an emtpy div of equal height
           </p>
         </div>
       </div>
