@@ -34,8 +34,8 @@ export interface SharedProgramData {
 // Main Component
 export default function Home() {
   // Sidebar and editor state
-  const [sidebarWidth, setSidebarWidth] = useState(500);
-  const [editorWidth, setEditorWidth] = useState(sidebarWidth - 40);
+  const [sidebarWidth, setSidebarWidth] = useState(600);
+  const [editorWidth, setEditorWidth] = useState(sidebarWidth - 60);
   const [selectedNode, setSelectedNode] = useState<string | undefined>(
     undefined
   );
@@ -52,7 +52,7 @@ export default function Home() {
       const onMouseMove = (moveEvent: MouseEvent) => {
         const newWidth = Math.max(300, startWidth + moveEvent.clientX - startX);
         setSidebarWidth(newWidth);
-        setEditorWidth(newWidth - 40);
+        setEditorWidth(newWidth - 60);
       };
 
       const onMouseUp = () => {

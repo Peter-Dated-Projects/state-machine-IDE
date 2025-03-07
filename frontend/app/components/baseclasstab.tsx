@@ -1,9 +1,11 @@
 import styles from "./styles/baseclasstab.module.css";
-import React, { useEffect } from "react";
-import Editor from "@monaco-editor/react";
+import React, { useEffect, useState } from "react";
+import Editor, { loader } from "@monaco-editor/react";
 
 import { TabInfoProps } from "./sidebar";
 import { SUPPORTED_LANGUAGES, DEFAULT_CLASS_TEXT } from "./tabinformation";
+import { Select } from "@radix-ui/themes";
+// import nordTheme from "monaco-themes/themes/Nord.json";
 
 // ------------------------------------------ //
 // base class input props
@@ -17,21 +19,31 @@ interface BaseClassTabProps {
 // ------------------------------------------ //
 const BaseClassTab = ({ props }: BaseClassTabProps) => {
   // is saved or not saved
-  const [isSaved, setIsSaved] = React.useState(true);
+  const [isSaved, setIsSaved] = useState(true);
+
+  const handleSave = (event: KeyboardEvent) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+      event.preventDefault();
+      setIsSaved(true);
+
+      // console.log("sending request parsing signal");
+
+      // send information to backend and retrieve active variables
+      window.dispatchEvent(new CustomEvent("requestparsing"));
+    }
+  };
+
+  const generateBaseCode = () => {
+    // send information to backend and retrieve active variables
+    // take parsed information after saving, then request backend to generate rest of code
+    console.log("sending generate request");
+    window.dispatchEvent(new CustomEvent("generatecode"));
+
+    // Fills in the rest of the code in baseCode and changes it in the editor
+    // TODO: popup for chatbot - later
+  };
 
   useEffect(() => {
-    const handleSave = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
-        event.preventDefault();
-        setIsSaved(true);
-
-        // console.log("sending request parsing signal");
-
-        // send information to backend and retrieve active variables
-        window.dispatchEvent(new CustomEvent("requestparsing"));
-      }
-    };
-
     window.addEventListener("keydown", handleSave);
 
     return () => {
@@ -45,7 +57,7 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
       <div className={styles["code-editor-container"]}>
         <div className={styles["code-editor-admin-bar"]}>
           <div style={{ display: "flex" }}>
-            <p>Base Class Code Editor</p>
+            <h2>Editor</h2>
           </div>
           <div className={styles["code-editor-language-selector"]}>
             <svg height="17" width="17" style={{ alignSelf: "center" }}>
@@ -53,24 +65,28 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
                 cx="8.5"
                 cy="8.5"
                 r="8"
-                fill={isSaved ? "green" : "red"}
+                fill={isSaved ? "lightgreen" : "red"}
               />
             </svg>
-            <select
+
+            <Select.Root
               value={props.baseClassLanguage.getter}
-              onChange={(e) => props.baseClassLanguage.setter(e.target.value)}
+              onValueChange={(value) => props.baseClassLanguage.setter(value)}
             >
-              {SUPPORTED_LANGUAGES.map((language) => (
-                <option key={language} value={language}>
-                  {language}
-                </option>
-              ))}
-            </select>
+              <Select.Trigger />
+              <Select.Content position="popper">
+                {SUPPORTED_LANGUAGES.map((language) => (
+                  <Select.Item key={language} value={language}>
+                    {language}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Root>
           </div>
         </div>
         <div className="code-editor-container">
           <Editor
-            height="40vh"
+            height="50vh"
             width={props.editorWidth.getter}
             language={props.baseClassLanguage.getter}
             value={props.baseClassCode.getter}
@@ -80,10 +96,15 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
               props.baseClassCode.setter(value || "");
               setIsSaved(false);
             }}
-            onMount={(editor) => {
+            onMount={(editor, monaco) => {
               editor.focus();
               props.baseClassCode.setter(editor.getValue());
               window.dispatchEvent(new CustomEvent("requestparsing"));
+
+              // loader.init().then((monacoInstance) => {
+              //   monacoInstance.editor.defineTheme("nord", nordTheme);
+              //   monacoInstance.editor.setTheme("nord");
+              // });
             }}
           />
         </div>
@@ -111,6 +132,9 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
           </div>
         </div>
       </div>
+      <button className={styles["generate-btn"]} onClick={generateBaseCode}>
+        Save & Generate
+      </button>
     </div>
   );
 };

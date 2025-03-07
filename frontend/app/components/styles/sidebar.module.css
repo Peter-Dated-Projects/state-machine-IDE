@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  padding: var(--padding);
+  padding: 10px;
   height: 100%;
   width: 100%;
   background-color: var(--background);
@@ -13,13 +13,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing);
+  padding: 10px 16px;
+  border-radius: 8px;
   font-size: var(--font-size);
   background: rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius);
+}
+
+.currentNodeDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgb(70, 70, 70);
+  font-size: var(--font-size);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .editorTab {
-  flex: 1;
-  padding-top: var(--spacing);
+  display: flex;
+  margin-top: 16px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: var(--font-size);
+  background: rgba(255, 255, 255, 0.05);
 }

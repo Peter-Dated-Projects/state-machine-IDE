@@ -14,7 +14,6 @@ import {
   useEdgesState,
   type OnConnect,
   useReactFlow,
-  ReactFlowProvider,
 } from "@xyflow/react";
 
 import React, { useEffect, useRef } from "react";
@@ -30,9 +29,9 @@ import {
   CardStackPlusIcon,
   CheckIcon,
   DownloadIcon,
-  PlusIcon,
 } from "@radix-ui/react-icons";
 import { Tooltip } from "@radix-ui/themes";
+import html2canvas from "html2canvas";
 
 // interface
 interface CanvasProps {
@@ -114,13 +113,47 @@ export default function CanvasWindow({ props }: CanvasProps) {
       stroke: "white",
     },
   };
-
   const connectionLineStyle = { stroke: "white" };
 
-  const nodeId = 0;
-
   const reactFlowInstance = useReactFlow();
+  const nodeId = 0;
   const nodeIdRef = useRef(nodeId);
+
+  // Control Button Functions
+  const downloadFlow = useCallback(() => {
+    const flow = {
+      nodes: nodes,
+      edges: edges,
+    };
+    const dataStr =
+      "data:text/json;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(flow, null, 2));
+    const downloadAnchorNode = document.createElement("a");
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "flow.json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+
+    // const flowElement = document.querySelector(".react-flow");
+    // if (flowElement) {
+    //   html2canvas(flowElement).then((canvas) => {
+    //     const dataURL = canvas.toDataURL("image/jpeg");
+    //     const downloadAnchorNode = document.createElement("a");
+    //     downloadAnchorNode.setAttribute("href", dataURL);
+    //     downloadAnchorNode.setAttribute("download", "flow.jpg");
+    //     document.body.appendChild(downloadAnchorNode); // required for firefox
+    //     downloadAnchorNode.click();
+    //     downloadAnchorNode.remove();
+    //   });
+    // }
+  }, [nodes, edges]);
+
+  const saveFlow = useCallback(() => {
+    console.log("saving flow");
+
+    // save and update generate base class code in backend!! // - TODO
+  }, []);
 
   const clickedAddNode = useCallback(() => {
     const id = `${++nodeIdRef.current}`;
@@ -134,19 +167,35 @@ export default function CanvasWindow({ props }: CanvasProps) {
         label: `new node ${id}`,
       },
     };
+    setNodes((nodes) => nodes.concat(newNode));
+    console.log(nodes);
+    props.activeNodes.setter(
+      new Map([
+        ...props.activeNodes.getter,
+        [
+          id,
+          {
+            id: id,
+            name: newNode.data.label,
+            type: "base",
+            position: newNode.position,
+          },
+        ],
+      ])
+    );
     reactFlowInstance.addNodes(newNode);
-  }, [reactFlowInstance]);
+  }, [setNodes, nodes, props.activeNodes, reactFlowInstance]);
 
   const controlButtons = [
     {
       icon: <DownloadIcon width={20} height={20} />,
       tooltip: "Download Flow",
-      onClick: () => {},
+      onClick: downloadFlow,
     },
     {
       icon: <CheckIcon width={20} height={20} />,
       tooltip: "Save Flow",
-      onClick: () => {},
+      onClick: saveFlow,
     },
     {
       icon: <CardStackPlusIcon width={20} height={20} />,

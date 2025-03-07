@@ -1,8 +1,9 @@
 .container {
   padding: 5px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   height: 100%;
-  grid-template-rows: 1fr 1fr;
 }
 
 .code-editor-container {
@@ -17,7 +18,7 @@
   display: flex;
   align-items: center;
   width: 100%;
-  gap: 10px;
+  padding: 0px 0px 15px 0px;
 }
 
 .code-editor-language-selector {
@@ -41,4 +42,20 @@
 .class-variables-container {
   padding: 5px;
   width: 100%;
+}
+
+.generate-btn {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  border: 0px;
+  background-color: rgb(220, 34, 30);
+  transition: ease 0.2s all;
+}
+
+.generate-btn:hover {
+  background-color: rgb(255, 34, 20);
 }

@@ -34,7 +34,7 @@ export function BaseNode({
       <div className={styles.container}>
         <div>
           <span>
-            {Math.round(positionAbsoluteX)},{Math.round(positionAbsoluteY)})
+            {Math.round(positionAbsoluteX)},{Math.round(positionAbsoluteY)}
           </span>
         </div>
       </div>

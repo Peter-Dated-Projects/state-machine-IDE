@@ -86,7 +86,8 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   return (
     <div className={styles.container}>
       <div className={styles.nodeInfo}>
-        <b>Current Node:</b> {currentNodeDisplay}
+        <h3>Current Node:</h3>
+        <div className={styles.currentNodeDisplay}>{currentNodeDisplay}</div>
       </div>
       <div className={styles.editorTab}>
         <BaseClassTab key="baseClassTab" props={tabInfo} />
