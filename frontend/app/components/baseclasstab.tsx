@@ -2,7 +2,7 @@ import styles from "./styles/baseclasstab.module.css";
 import React, { useEffect } from "react";
 import Editor from "@monaco-editor/react";
 
-import { TabInfoProps } from "../sidebar";
+import { TabInfoProps } from "./sidebar";
 import { SUPPORTED_LANGUAGES, DEFAULT_CLASS_TEXT } from "./tabinformation";
 
 // ------------------------------------------ //

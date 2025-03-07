@@ -3,6 +3,7 @@ import styles from "./page.module.css";
 import React, { useState, useCallback } from "react";
 import SideBar from "./components/sidebar";
 import CanvasWindow from "./components/canvas";
+import { ReactFlowProvider } from "@xyflow/react";
 
 // ------------------------------------------ //
 // Interfaces
@@ -35,8 +36,12 @@ export default function Home() {
   // Sidebar and editor state
   const [sidebarWidth, setSidebarWidth] = useState(500);
   const [editorWidth, setEditorWidth] = useState(sidebarWidth - 40);
-  const [selectedNode, setSelectedNode] = useState<string | undefined>(undefined);
-  const [activeNodes, setActiveNodes] = useState<Map<string, NodeInterface>>(new Map());
+  const [selectedNode, setSelectedNode] = useState<string | undefined>(
+    undefined
+  );
+  const [activeNodes, setActiveNodes] = useState<Map<string, NodeInterface>>(
+    new Map()
+  );
 
   // Handle sidebar resize
   const handleMouseDown = useCallback(
@@ -70,7 +75,10 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.container} style={{ display: "flex", height: "100vh" }}>
+      <div
+        className={styles.container}
+        style={{ display: "flex", height: "100vh" }}
+      >
         {/* Sidebar */}
         <div
           style={{
@@ -87,7 +95,9 @@ export default function Home() {
 
         {/* Canvas Window */}
         <div style={{ flexGrow: 1, height: "100vh" }}>
-          <CanvasWindow props={sharedData} />
+          <ReactFlowProvider>
+            <CanvasWindow props={sharedData} />
+          </ReactFlowProvider>
         </div>
       </div>
     </div>
