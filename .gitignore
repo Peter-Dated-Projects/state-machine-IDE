@@ -46,13 +46,12 @@ yarn-error.log*
 next-env.d.ts
 
 
-
-*/node_modules
+*/__pycache__
+**/node_modules
 */.next
 */.vscode
 .vscode
 /.vscode
 
 
-.venv
-*/.venv
+**/.venv
