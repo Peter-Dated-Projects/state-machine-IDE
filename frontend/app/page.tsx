@@ -7,20 +7,26 @@ import CanvasWindow from "./components/canvas";
 // ------------------------------------------ //
 // Interfaces
 interface NodeInterface {
-  id: number;
+  id: string;
   name: string;
-  x: number;
-  y: number;
+  type: string;
+  position: { x: number; y: number };
 }
 
 export interface StateManagerProps<T> {
   getter: T;
   setter: (value: T) => void;
+  onChange?: (callback: (value: T) => void) => void;
+}
+
+export interface KeyNodePair {
+  [key: string]: NodeInterface;
 }
 
 export interface SharedProgramData {
   editorWidth: StateManagerProps<number>;
-  selectedNode: StateManagerProps<NodeInterface | null>;
+  selectedNode: StateManagerProps<string | undefined>;
+  activeNodes: StateManagerProps<Map<string, NodeInterface>>;
 }
 
 // ------------------------------------------ //
@@ -29,7 +35,8 @@ export default function Home() {
   // Sidebar and editor state
   const [sidebarWidth, setSidebarWidth] = useState(500);
   const [editorWidth, setEditorWidth] = useState(sidebarWidth - 40);
-  const [selectedNode, setSelectedNode] = useState<NodeInterface | null>(null);
+  const [selectedNode, setSelectedNode] = useState<string | undefined>(undefined);
+  const [activeNodes, setActiveNodes] = useState<Map<string, NodeInterface>>(new Map());
 
   // Handle sidebar resize
   const handleMouseDown = useCallback(
@@ -58,14 +65,12 @@ export default function Home() {
   const sharedData: SharedProgramData = {
     editorWidth: { getter: editorWidth, setter: setEditorWidth },
     selectedNode: { getter: selectedNode, setter: setSelectedNode },
+    activeNodes: { getter: activeNodes, setter: setActiveNodes },
   };
 
   return (
     <div className={styles.page}>
-      <div
-        className={styles.container}
-        style={{ display: "flex", height: "100vh" }}
-      >
+      <div className={styles.container} style={{ display: "flex", height: "100vh" }}>
         {/* Sidebar */}
         <div
           style={{

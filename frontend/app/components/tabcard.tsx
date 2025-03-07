@@ -8,20 +8,11 @@ interface TabCardProps {
   onClick: () => void;
 }
 
-export default function TabCard({
-  title,
-  activeTab,
-  tabKey,
-  onClick,
-}: TabCardProps) {
-  console.log("active tab: ", activeTab);
-
+export default function TabCard({ title, activeTab, tabKey, onClick }: TabCardProps) {
   return (
     <div
       className={`${styles["container"]} ${
-        activeTab == tabKey
-          ? styles["active-container"]
-          : styles["inactive-container"]
+        activeTab == tabKey ? styles["active-container"] : styles["inactive-container"]
       }`}
       onClick={onClick}
     >

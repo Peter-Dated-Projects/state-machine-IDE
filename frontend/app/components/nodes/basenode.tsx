@@ -26,11 +26,15 @@ export function BaseNode({
     <div
       className={`react-flow__node-default ${selected ? "selected" : ""}`}
       style={{ padding: 2, zIndex: `${zIndex}` }}
+      onClick={() => {
+        // set current node to self
+        data.props.selectedNode.setter(id);
+      }}
     >
       <div className={styles.container}>
         <div>
           <span>
-            ({positionAbsoluteX},{positionAbsoluteY})
+            {Math.round(positionAbsoluteX)},{Math.round(positionAbsoluteY)})
           </span>
         </div>
       </div>

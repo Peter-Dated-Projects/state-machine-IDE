@@ -17,6 +17,7 @@ interface BackendQueryVariable {
   value: string;
 }
 
+// Tab Info Props -- for backend communication
 export interface TabInfoProps {
   editorWidth: StateManagerProps<number>;
   baseClassCode: StateManagerProps<string>;
@@ -26,15 +27,41 @@ export interface TabInfoProps {
 
 const TABS = ["Base Class", "Node Editor"];
 
+// side bar compenent
 const SideBar: React.FC<SideBarProps> = ({ props }) => {
   // State Management
   const [activeTab, setActiveTab] = useState(0);
   const [baseClassCode, setBaseClassCode] = useState("");
   const [baseClassLanguage, setBaseClassLanguage] = useState("python");
-  const [baseClassVariables, setBaseClassVariables] = useState<
-    BackendQueryVariable[]
-  >([]);
+  const [baseClassVariables, setBaseClassVariables] = useState<BackendQueryVariable[]>([]);
   const [readyToParse, setReadyToParse] = useState(false);
+
+  // display current Node Information
+  const [currentNodeDisplay, setCurrentNodeDisplay] = useState<string>("");
+
+  React.useEffect(() => {
+    // update display value
+    // if null value
+    if (!props.selectedNode.getter) {
+      setCurrentNodeDisplay("No Selected Node");
+      return;
+    } else {
+      const n_id = props.selectedNode.getter;
+      const n_data = props.activeNodes.getter.get(n_id);
+      console.log(n_id, n_data);
+      if (!n_data) {
+        setCurrentNodeDisplay("No Selected Node");
+        return;
+      }
+      console.log(n_data);
+
+      if (!n_data) {
+        setCurrentNodeDisplay("No Selected Node");
+        return;
+      }
+      setCurrentNodeDisplay(`${n_data.id} -- ${n_data.type}`);
+    }
+  }, [props.selectedNode.getter, props.activeNodes.getter]);
 
   // Memoized Tab Info Object
   const tabInfo = useMemo(
@@ -71,8 +98,7 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   useEffect(() => {
     const handleRequestParsing = () => setReadyToParse(true);
     window.addEventListener("requestparsing", handleRequestParsing);
-    return () =>
-      window.removeEventListener("requestparsing", handleRequestParsing);
+    return () => window.removeEventListener("requestparsing", handleRequestParsing);
   }, []);
 
   // Handle Code Parsing Request
@@ -111,14 +137,8 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     <div className={styles.container}>
       <div className={styles["container-grid"]}>
         {/* Tab Selection */}
-        <div
-          className={styles["container-grid-item"]}
-          style={{ paddingBottom: 0 }}
-        >
-          <div
-            className={styles["tab-cards-container"]}
-            style={{ paddingBottom: 0 }}
-          >
+        <div className={styles["container-grid-item"]} style={{ paddingBottom: 0 }}>
+          <div className={styles["tab-cards-container"]} style={{ paddingBottom: 0 }}>
             {TABS.map((tab, index) => (
               <TabCard
                 title={tab}
@@ -132,14 +152,10 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
         </div>
 
         {/* Node Info */}
-        <div
-          className={`${styles["container-grid-item"]} ${styles["sidebar-node-info"]}`}
-        >
+        <div className={`${styles["container-grid-item"]} ${styles["sidebar-node-info"]}`}>
           <div style={{ paddingLeft: "5px" }}>
             <b>Current Node: </b>
-            {props.selectedNode.getter
-              ? props.selectedNode.getter.name
-              : "Not Selected"}
+            {currentNodeDisplay}
           </div>
         </div>
 
