@@ -106,10 +106,6 @@ export default function CanvasWindow({ props }: CanvasProps) {
           fitView
           colorMode="dark"
         >
-          {/* controls inside canvas */}
-          {/* <div className={styles.controls}>
-            <h1 className={styles.header}>Canvas</h1>
-          </div> */}
           <Background />
           <MiniMap />
           <Controls />

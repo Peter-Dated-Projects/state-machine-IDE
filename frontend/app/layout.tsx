@@ -39,7 +39,7 @@ export default function RootLayout({
           scaling="100%"
         >
           {children}
-          <ThemePanel />
+          {/* <ThemePanel /> */}
           {/* lol testing cool     */}
         </Theme>
       </body>
