@@ -42,6 +42,25 @@
 .class-variables-container {
   padding: 5px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.class-variable {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  border-radius: 8px;
+  background: var(--primary);
+
+  transform: ease 0.2s all;
+}
+
+.class-variable:hover {
+  background: var(--primary-accent);
+
+  transition: ease 0.2s all;
 }
 
 .generate-btn {
@@ -59,3 +78,5 @@
 .generate-btn:hover {
   background-color: rgb(255, 34, 20);
 }
+
+

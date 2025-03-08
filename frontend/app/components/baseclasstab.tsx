@@ -112,14 +112,12 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
 
       {/* secon section */}
       <div className={styles["nocode-container"]}>
-        <div>No Code Editor</div>
         <div>
           <div>
             <h3>Class Variables</h3>
           </div>
           <div className={styles["class-variables-container"]}>
             {/* a section for class variables */}
-            <div>
               {props.baseClassVariables.getter.map((variable, index) => (
                 <div key={index} className={styles["class-variable"]}>
                   <div>
@@ -128,7 +126,6 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
                   </div>
                 </div>
               ))}
-            </div>
           </div>
         </div>
       </div>

@@ -29,9 +29,9 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     BackendQueryVariable[]
   >([]);
   const [readyToParse, setReadyToParse] = useState(false);
-  const [currentNodeDisplay, setCurrentNodeDisplay] =
-    useState<string>("No Selected Node");
+  const [currentNodeDisplay, setCurrentNodeDisplay] = useState<string>("No Selected Node");
 
+  // Update the current node display
   useEffect(() => {
     const nodeId = props.selectedNode.getter;
     const nodeData = nodeId ? props.activeNodes.getter.get(nodeId) : null;
@@ -40,6 +40,7 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     );
   }, [props.selectedNode.getter, props.activeNodes.getter]);
 
+  // Memoize the tab information
   const tabInfo = useMemo(
     () => ({
       editorWidth: props.editorWidth,
@@ -56,10 +57,12 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     [baseClassCode, baseClassLanguage, baseClassVariables, props.editorWidth]
   );
 
+  // Log the base class code
   useEffect(() => {
     console.log("Base Class Code:", tabInfo.baseClassCode.getter);
   }, [tabInfo.baseClassCode.getter]);
 
+  // Parse the base class code
   useEffect(() => {
     const handleRequestParsing = () => setReadyToParse(true);
     window.addEventListener("requestparsing", handleRequestParsing);
@@ -67,6 +70,7 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
       window.removeEventListener("requestparsing", handleRequestParsing);
   }, []);
 
+  // Send the base class code to the backend for parsing
   useEffect(() => {
     if (!readyToParse) return;
     fetch(`${BACKEND_IP}/api/code-parser`, {
@@ -83,6 +87,7 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     setReadyToParse(false);
   }, [readyToParse, tabInfo]);
 
+  // Generate the base class code
   return (
     <div className={styles.container}>
       <div className={styles.nodeInfo}>

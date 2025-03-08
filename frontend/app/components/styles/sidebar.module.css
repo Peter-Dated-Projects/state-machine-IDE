@@ -3,6 +3,7 @@
   flex-direction: column;
   padding: 10px;
   height: 100%;
+
   width: 100%;
   background-color: var(--background);
   color: var(--foreground);
@@ -19,7 +20,7 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-.currentNodeDisplay {
+.currentNodeDisplay  {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -38,4 +39,6 @@
   border-radius: 8px;
   font-size: var(--font-size);
   background: rgba(255, 255, 255, 0.05);
+
+  height: 100%;
 }
