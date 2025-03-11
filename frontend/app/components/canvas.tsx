@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useCallback } from "react";
 import {
   ReactFlow,
   Background,
@@ -174,10 +174,6 @@ export default function CanvasWindow({ props }: CanvasProps) {
   };
   const connectionLineStyle = { stroke: "white" };
 
-  const reactFlowInstance = useReactFlow();
-  const nodeId = 0;
-  const nodeIdRef = useRef(nodeId);
-
   // ------------------------------------- //
   // Control Button Functions
   const downloadFlow = useCallback(() => {
@@ -215,22 +211,20 @@ export default function CanvasWindow({ props }: CanvasProps) {
   }, []);
 
   const clickedAddNode = useCallback(() => {
-    const id = `${++nodeIdRef.current}`;
-    const newNode = {
-      id,
-      type: "base",
+    const newNode = generateLocalNodeObject({
+      name: "new node",
       position: {
         x: Math.random() * 250,
         y: Math.random() * 250,
       },
-      data: {
-        label: `new node ${id}`,
-      },
-    } as AppNode;
+      data: { label: `new node ${props.nodeInformation.activeNodes.getter.size + 1}` },
+      props: props,
+    }) as AppNode;
+
+    console.log(newNode);
 
     // update local node storage
     setNodes((nodes) => nodes.concat(newNode));
-    console.log(nodes);
 
     // update global node storage -- different storage method
     // stored as: Map<string, LocalNodeObject>
@@ -241,22 +235,17 @@ export default function CanvasWindow({ props }: CanvasProps) {
     //          position: { x: number; y: number }
     //       }
 
-    props.nodeInformation.activeNodes.setter(
-      new Map([
-        ...props.nodeInformation.activeNodes.getter,
-        [
-          id,
-          {
-            id: id,
-            name: newNode.data.label,
-            type: "base",
-            position: newNode.position,
-          } as LocalNodeObject,
-        ],
-      ])
-    );
-    reactFlowInstance.addNodes(newNode);
-  }, [setNodes, nodes, props.nodeInformation.activeNodes, reactFlowInstance]);
+    const mapTemp = props.nodeInformation.activeNodes.getter;
+    mapTemp.set(newNode.id, {
+      id: newNode.id,
+      name: newNode.data.label,
+      type: newNode.type,
+      position: newNode.position,
+    });
+    props.nodeInformation.activeNodes.setter(mapTemp);
+
+    console.log(props.nodeInformation.activeNodes.getter);
+  }, [props, setNodes]);
 
   const controlButtons = [
     {

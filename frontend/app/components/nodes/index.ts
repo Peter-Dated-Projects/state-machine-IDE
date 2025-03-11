@@ -42,7 +42,6 @@ export function generateLocalNodeObject({
   if (result.data.label === undefined) {
     result.data.label = result.name;
   }
-  console.log(result);
   return result as LocalNodeObject;
 }
 
