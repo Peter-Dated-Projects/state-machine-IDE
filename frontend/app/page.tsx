@@ -5,14 +5,12 @@ import SideBar from "./components/sidebar";
 import CanvasWindow from "./components/canvas";
 import { ReactFlowProvider } from "@xyflow/react";
 
+import { LocalEdgeObject } from "./components/edges";
+
+import { LocalNodeObject } from "./components/nodes";
+
 // ------------------------------------------ //
 // Interfaces
-interface NodeInterface {
-  id: string;
-  name: string;
-  type: string;
-  position: { x: number; y: number };
-}
 
 export interface StateManagerProps<T> {
   getter: T;
@@ -21,13 +19,25 @@ export interface StateManagerProps<T> {
 }
 
 export interface KeyNodePair {
-  [key: string]: NodeInterface;
+  [key: string]: LocalNodeObject;
+}
+
+export interface GlobalNodeInformation {
+  selectedNode: StateManagerProps<string | undefined>;
+  hoveringNode: StateManagerProps<string | undefined>;
+  activeNodes: StateManagerProps<Map<string, LocalNodeObject>>;
+}
+
+export interface GlobalEdgeInformation {
+  selectedEdge: StateManagerProps<string | undefined>;
+  hoveringEdge: StateManagerProps<string | undefined>;
+  activeEdges: StateManagerProps<Map<string, LocalEdgeObject>>;
 }
 
 export interface SharedProgramData {
   editorWidth: StateManagerProps<number>;
-  selectedNode: StateManagerProps<string | undefined>;
-  activeNodes: StateManagerProps<Map<string, NodeInterface>>;
+  nodeInformation: GlobalNodeInformation;
+  edgeInformation: GlobalEdgeInformation;
 }
 
 // ------------------------------------------ //
@@ -36,12 +46,6 @@ export default function Home() {
   // Sidebar and editor state
   const [sidebarWidth, setSidebarWidth] = useState(600);
   const [editorWidth, setEditorWidth] = useState(sidebarWidth - 60);
-  const [selectedNode, setSelectedNode] = useState<string | undefined>(
-    undefined
-  );
-  const [activeNodes, setActiveNodes] = useState<Map<string, NodeInterface>>(
-    new Map()
-  );
 
   // Handle sidebar resize
   const handleMouseDown = useCallback(
@@ -69,16 +73,21 @@ export default function Home() {
   // Shared program state
   const sharedData: SharedProgramData = {
     editorWidth: { getter: editorWidth, setter: setEditorWidth },
-    selectedNode: { getter: selectedNode, setter: setSelectedNode },
-    activeNodes: { getter: activeNodes, setter: setActiveNodes },
+    nodeInformation: {
+      selectedNode: { getter: undefined, setter: () => {} },
+      hoveringNode: { getter: undefined, setter: () => {} },
+      activeNodes: { getter: new Map<string, LocalNodeObject>(), setter: () => {} },
+    },
+    edgeInformation: {
+      selectedEdge: { getter: undefined, setter: () => {} },
+      hoveringEdge: { getter: undefined, setter: () => {} },
+      activeEdges: { getter: new Map<string, LocalEdgeObject>(), setter: () => {} },
+    },
   };
 
   return (
     <div className={styles.page}>
-      <div
-        className={styles.container}
-        style={{ display: "flex", height: "100vh" }}
-      >
+      <div className={styles.container} style={{ display: "flex", height: "100vh" }}>
         {/* Sidebar */}
         <div
           style={{

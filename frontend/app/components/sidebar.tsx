@@ -25,20 +25,16 @@ export interface TabInfoProps {
 const SideBar: React.FC<SideBarProps> = ({ props }) => {
   const [baseClassCode, setBaseClassCode] = useState("");
   const [baseClassLanguage, setBaseClassLanguage] = useState("python");
-  const [baseClassVariables, setBaseClassVariables] = useState<
-    BackendQueryVariable[]
-  >([]);
+  const [baseClassVariables, setBaseClassVariables] = useState<BackendQueryVariable[]>([]);
   const [readyToParse, setReadyToParse] = useState(false);
   const [currentNodeDisplay, setCurrentNodeDisplay] = useState<string>("No Selected Node");
 
   // Update the current node display
   useEffect(() => {
-    const nodeId = props.selectedNode.getter;
-    const nodeData = nodeId ? props.activeNodes.getter.get(nodeId) : null;
-    setCurrentNodeDisplay(
-      nodeData ? `${nodeData.id} — ${nodeData.type}` : "No Selected Node"
-    );
-  }, [props.selectedNode.getter, props.activeNodes.getter]);
+    const nodeId = props.nodeInformation.selectedNode.getter;
+    const nodeData = nodeId ? props.nodeInformation.activeNodes.getter.get(nodeId) : null;
+    setCurrentNodeDisplay(nodeData ? `${nodeData.id} — ${nodeData.type}` : "No Selected Node");
+  }, [props.nodeInformation.selectedNode.getter, props.nodeInformation.activeNodes.getter]);
 
   // Memoize the tab information
   const tabInfo = useMemo(
@@ -66,8 +62,7 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   useEffect(() => {
     const handleRequestParsing = () => setReadyToParse(true);
     window.addEventListener("requestparsing", handleRequestParsing);
-    return () =>
-      window.removeEventListener("requestparsing", handleRequestParsing);
+    return () => window.removeEventListener("requestparsing", handleRequestParsing);
   }, []);
 
   // Send the base class code to the backend for parsing

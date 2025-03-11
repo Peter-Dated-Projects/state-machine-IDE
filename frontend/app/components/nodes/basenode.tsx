@@ -21,6 +21,24 @@ export function BaseNode({
   selected,
   zIndex,
 }: NodeProps<BaseNodeType>) {
+  // Note: data is type: { props: SharedProgramData; label: string }
+  //    SharedProgramData is defined in frontend/app/page.ts
+  //      of form:
+  //        {
+  //          selectedNode: {
+  //            value: string,
+  //            setter: (value: string) => void,
+  //          },
+  //          activeNodes: {
+  //            value: Map<string, LocalNodeObject>,
+  //            setter: (value: Map<string, LocalNodeObject>) => void,
+  //          },
+  //          editorWidth: {
+  //            value: number,
+  //            setter: (value: number) => void,
+  //          },
+  //        }
+
   return (
     // We add this class to use the same styles as React Flow's default nodes.
     <div
@@ -28,7 +46,7 @@ export function BaseNode({
       style={{ padding: 2, zIndex: `${zIndex}` }}
       onClick={() => {
         // set current node to self
-        data.props.selectedNode.setter(id);
+        data.props.nodeInformation.selectedNode.setter(id);
       }}
     >
       <div className={styles.container}>
@@ -43,6 +61,8 @@ export function BaseNode({
         {data.label && <div>{data.label}</div>}
       </div>
       <div style={{ height: "10px" }}></div>
+
+      {/* write some logic about edge hovering + input + output handling */}
 
       <Handle type="source" position={Position.Bottom} />
       <Handle type="target" position={Position.Top} />

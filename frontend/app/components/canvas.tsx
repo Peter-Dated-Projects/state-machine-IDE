@@ -1,9 +1,5 @@
 "use client";
-
-import styles from "./styles/canvas.module.css";
-
-import "@xyflow/react/dist/style.css";
-
+import React, { useEffect, useRef, useCallback } from "react";
 import {
   ReactFlow,
   Background,
@@ -12,26 +8,18 @@ import {
   addEdge,
   useNodesState,
   useEdgesState,
-  type OnConnect,
   useReactFlow,
+  Connection,
 } from "@xyflow/react";
-
-import React, { useEffect, useRef } from "react";
-
-import { nodeTypes } from "./nodes";
-import { initialEdges, edgeTypes } from "./edges";
-import { useCallback } from "react";
-import { SharedProgramData } from "../page";
-
-import { AppNode } from "./nodes/types";
-import { KeyNodePair } from "../page";
-import {
-  CardStackPlusIcon,
-  CheckIcon,
-  DownloadIcon,
-} from "@radix-ui/react-icons";
+import "@xyflow/react/dist/style.css";
+import { CardStackPlusIcon, CheckIcon, DownloadIcon } from "@radix-ui/react-icons";
 import { Tooltip } from "@radix-ui/themes";
-import html2canvas from "html2canvas";
+import styles from "./styles/canvas.module.css";
+import { nodeTypes, LocalNodeObject, generateLocalNodeObject } from "./nodes";
+import { edgeTypes, LocalEdgeObject, generateLocalEdgeObject } from "./edges";
+import { Edge } from "@xyflow/react";
+import { SharedProgramData } from "../page";
+import { AppNode } from "./nodes/types";
 
 // interface
 interface CanvasProps {
@@ -42,12 +30,42 @@ interface CanvasProps {
 export default function CanvasWindow({ props }: CanvasProps) {
   // variables
   const [nodes, setNodes, onNodesChange] = useNodesState([] as AppNode[]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
 
+  // ------------------------------------- //
   // function
-  const onConnect: OnConnect = useCallback(
-    (connection) => setEdges((edges) => addEdge(connection, edges)),
-    [setEdges]
+
+  // event -- when an "edge" b/t 2 nodes is created
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      // Generate a unique ID for the new edge
+      const edgeId = `${connection.source}->${connection.target}`;
+
+      // Create the edge object without type casting
+      const newEdge: Edge = {
+        ...connection,
+        id: edgeId,
+        animated: true,
+      };
+
+      // Update ReactFlow edges state
+      setEdges((edges) => addEdge(newEdge, edges));
+
+      // Also update your global edge state
+      props.edgeInformation.activeEdges.setter(
+        new Map([
+          ...props.edgeInformation.activeEdges.getter,
+          [
+            edgeId,
+            {
+              source: connection.source,
+              target: connection.target,
+            } as LocalEdgeObject,
+          ],
+        ])
+      );
+    },
+    [setEdges, props.edgeInformation.activeEdges]
   );
 
   // ------------------------------------- //
@@ -58,34 +76,46 @@ export default function CanvasWindow({ props }: CanvasProps) {
       // add default nodes
       const defaultValues = [
         {
+          ...generateLocalNodeObject({
+            name: "wire",
+            position: { x: 0, y: 0 },
+            data: { label: "wire" },
+            props: props,
+          }),
           id: "a",
-          type: "base",
-          position: { x: 0, y: 0 },
-          data: { props: props, label: "wire" },
         },
         {
+          ...generateLocalNodeObject({
+            name: "drag me!",
+            position: { x: -100, y: 100 },
+            data: { label: "drag me!" },
+            props: props,
+          }),
           id: "b",
-          type: "base",
-          position: { x: -100, y: 100 },
-          data: { props: props, label: "drag me!" },
         },
         {
+          ...generateLocalNodeObject({
+            name: "your ideas",
+            position: { x: 100, y: 100 },
+            data: { label: "your ideas" },
+            props: props,
+          }),
           id: "c",
-          type: "base",
-          position: { x: 100, y: 100 },
-          data: { props: props, label: "your ideas" },
         },
         {
+          ...generateLocalNodeObject({
+            name: "with React Flow",
+            position: { x: 0, y: 200 },
+            data: { label: "with React Flow" },
+            props: props,
+          }),
           id: "d",
-          type: "base",
-          position: { x: 0, y: 200 },
-          data: { props: props, label: "with React Flow" },
         },
-      ];
+      ] as LocalNodeObject[];
       setNodes(defaultValues as AppNode[]);
 
       // update values in props.activeNodes
-      props.activeNodes.setter(
+      props.nodeInformation.activeNodes.setter(
         new Map(
           defaultValues.map((node) => {
             return [
@@ -95,17 +125,46 @@ export default function CanvasWindow({ props }: CanvasProps) {
                 name: node.data.label,
                 type: node.type,
                 position: node.position,
-              },
+              } as LocalNodeObject,
+            ];
+          })
+        )
+      );
+
+      // -- also setup edges
+      const defaultEdges: Edge[] = [
+        generateLocalEdgeObject({
+          id: "a->c",
+          source: "a",
+          target: "c",
+          animated: true,
+        }),
+        generateLocalEdgeObject({ id: "b->d", source: "b", target: "d" }),
+        generateLocalEdgeObject({
+          id: "c->d",
+          source: "c",
+          target: "d",
+          animated: true,
+        }),
+      ];
+      setEdges(defaultEdges as Edge[]);
+
+      // store local edge data
+      props.edgeInformation.activeEdges.setter(
+        new Map(
+          defaultEdges.map((edge) => {
+            return [
+              edge.id,
+              {
+                source: edge.source,
+                target: edge.target,
+              } as LocalEdgeObject,
             ];
           })
         )
       );
     }
-  });
-
-  useEffect(() => {
-    console.log("nodes were changed!");
-  }, [props.activeNodes.getter]);
+  }, []); // <-- Empty dependency array added
 
   const edgeOptions = {
     animated: true,
@@ -119,6 +178,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
   const nodeId = 0;
   const nodeIdRef = useRef(nodeId);
 
+  // ------------------------------------- //
   // Control Button Functions
   const downloadFlow = useCallback(() => {
     const flow = {
@@ -126,8 +186,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
       edges: edges,
     };
     const dataStr =
-      "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(flow, null, 2));
+      "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(flow, null, 2));
     const downloadAnchorNode = document.createElement("a");
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", "flow.json");
@@ -159,6 +218,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
     const id = `${++nodeIdRef.current}`;
     const newNode = {
       id,
+      type: "base",
       position: {
         x: Math.random() * 250,
         y: Math.random() * 250,
@@ -166,12 +226,24 @@ export default function CanvasWindow({ props }: CanvasProps) {
       data: {
         label: `new node ${id}`,
       },
-    };
+    } as AppNode;
+
+    // update local node storage
     setNodes((nodes) => nodes.concat(newNode));
     console.log(nodes);
-    props.activeNodes.setter(
+
+    // update global node storage -- different storage method
+    // stored as: Map<string, LocalNodeObject>
+    // where key is id and value is LocalNodeObject
+    //      LocalNodeObject:
+    //       {
+    //          id: string; name: string; type: string;
+    //          position: { x: number; y: number }
+    //       }
+
+    props.nodeInformation.activeNodes.setter(
       new Map([
-        ...props.activeNodes.getter,
+        ...props.nodeInformation.activeNodes.getter,
         [
           id,
           {
@@ -179,12 +251,12 @@ export default function CanvasWindow({ props }: CanvasProps) {
             name: newNode.data.label,
             type: "base",
             position: newNode.position,
-          },
+          } as LocalNodeObject,
         ],
       ])
     );
     reactFlowInstance.addNodes(newNode);
-  }, [setNodes, nodes, props.activeNodes, reactFlowInstance]);
+  }, [setNodes, nodes, props.nodeInformation.activeNodes, reactFlowInstance]);
 
   const controlButtons = [
     {
@@ -224,10 +296,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
           <div className={styles["add-components-container"]}>
             {controlButtons.map((button, index) => (
               <Tooltip key={index} content={button.tooltip}>
-                <button
-                  className={styles["control-btn"]}
-                  onClick={button.onClick}
-                >
+                <button className={styles["control-btn"]} onClick={button.onClick}>
                   {button.icon}
                 </button>
               </Tooltip>
