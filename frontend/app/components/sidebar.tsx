@@ -27,14 +27,27 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   const [baseClassLanguage, setBaseClassLanguage] = useState("python");
   const [baseClassVariables, setBaseClassVariables] = useState<BackendQueryVariable[]>([]);
   const [readyToParse, setReadyToParse] = useState(false);
-  const [currentNodeDisplay, setCurrentNodeDisplay] = useState<string>("No Selected Node");
 
-  // Update the current node display
+  interface NodeData {
+    id: string;
+    type: string;
+  }
+  const [nodeData, setNodeData] = useState<NodeData | null>(null);
+
+  // create nodedata effect manager
   useEffect(() => {
-    const nodeId = props.nodeInformation.selectedNode.getter;
-    const nodeData = nodeId ? props.nodeInformation.activeNodes.getter.get(nodeId) : null;
-    setCurrentNodeDisplay(nodeData ? `${nodeData.id} — ${nodeData.type}` : "No Selected Node");
-  }, [props.nodeInformation.selectedNode.getter, props.nodeInformation.activeNodes.getter]);
+    // get node information
+    const nodeInfo = props.nodeInformation.selectedNode.getter
+      ? props.nodeInformation.activeNodes.getter.get(
+          props.nodeInformation.selectedNode.getter || ""
+        )
+      : null;
+    if (nodeInfo) {
+      setNodeData({ id: nodeInfo.id, type: nodeInfo.type });
+    } else {
+      setNodeData(null);
+    }
+  }, [props.nodeInformation.activeNodes.getter, props.nodeInformation.selectedNode.getter]);
 
   // Memoize the tab information
   const tabInfo = useMemo(
@@ -87,7 +100,9 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     <div className={styles.container}>
       <div className={styles.nodeInfo}>
         <h3>Current Node:</h3>
-        <div className={styles.currentNodeDisplay}>{currentNodeDisplay}</div>
+        <div className={styles.currentNodeDisplay}>
+          {nodeData ? `${nodeData.id} — ${nodeData.type}` : "No Selected Node"}
+        </div>
       </div>
       <div className={styles.editorTab}>
         <BaseClassTab key="baseClassTab" props={tabInfo} />

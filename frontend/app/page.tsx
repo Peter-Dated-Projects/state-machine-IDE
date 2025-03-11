@@ -71,17 +71,23 @@ export default function Home() {
   );
 
   // Shared program state
+  const [selectedNodeData, setSelectedNodeData] = useState<string | undefined>(undefined);
+  const [hoveringNodeData, setHoveringNodeData] = useState<string | undefined>(undefined);
+  const [activeNodesData, setActiveNodesData] = useState<Map<string, LocalNodeObject>>(new Map());
+  const [selectedEdgeData, setSelectedEdgeData] = useState<string | undefined>(undefined);
+  const [hoveringEdgeData, setHoveringEdgeData] = useState<string | undefined>(undefined);
+  const [activeEdgesData, setActiveEdgesData] = useState<Map<string, LocalEdgeObject>>(new Map());
   const sharedData: SharedProgramData = {
     editorWidth: { getter: editorWidth, setter: setEditorWidth },
     nodeInformation: {
-      selectedNode: { getter: undefined, setter: () => {} },
-      hoveringNode: { getter: undefined, setter: () => {} },
-      activeNodes: { getter: new Map<string, LocalNodeObject>(), setter: () => {} },
+      selectedNode: { getter: selectedNodeData, setter: setSelectedNodeData },
+      hoveringNode: { getter: hoveringNodeData, setter: setHoveringNodeData },
+      activeNodes: { getter: activeNodesData, setter: setActiveNodesData },
     },
     edgeInformation: {
-      selectedEdge: { getter: undefined, setter: () => {} },
-      hoveringEdge: { getter: undefined, setter: () => {} },
-      activeEdges: { getter: new Map<string, LocalEdgeObject>(), setter: () => {} },
+      selectedEdge: { getter: selectedEdgeData, setter: setSelectedEdgeData },
+      hoveringEdge: { getter: hoveringEdgeData, setter: setHoveringEdgeData },
+      activeEdges: { getter: activeEdgesData, setter: setActiveEdgesData },
     },
   };
 

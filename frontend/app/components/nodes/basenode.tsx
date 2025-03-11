@@ -46,6 +46,7 @@ export function BaseNode({
       style={{ padding: 2, zIndex: `${zIndex}` }}
       onClick={() => {
         // set current node to self
+        // console.log(id);
         data.props.nodeInformation.selectedNode.setter(id);
       }}
     >

@@ -276,6 +276,8 @@ export default function CanvasWindow({ props }: CanvasProps) {
     },
   ];
 
+  // ------------------------------------- //
+  // Render
   return (
     <div className={styles.container}>
       <div className={styles["flow-container"]}>
