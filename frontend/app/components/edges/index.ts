@@ -6,9 +6,7 @@ import type { EdgeTypes } from "@xyflow/react";
 export interface LocalEdgeObject {
   id: string;
   source: string;
-  sourceHandle: string | null;
   target: string;
-  targetHandle: string | null;
 
   animated: boolean;
 }
@@ -16,9 +14,7 @@ export interface LocalEdgeObject {
 interface LocalEdgeGeneratorProps {
   id?: string;
   source?: string;
-  sourceHandle?: string | null;
   target?: string;
-  targetHandle?: string | null;
 
   animated?: boolean;
 }
@@ -26,17 +22,13 @@ interface LocalEdgeGeneratorProps {
 export function generateLocalEdgeObject({
   id,
   source,
-  sourceHandle,
   target,
-  targetHandle,
   animated,
 }: LocalEdgeGeneratorProps = {}): LocalEdgeObject {
   return {
     id: id ?? crypto.randomUUID(),
     source: source ?? "defaultSource",
-    sourceHandle: sourceHandle ?? null,
     target: target ?? "defaultTarget",
-    targetHandle: targetHandle ?? null,
     animated: animated ?? false,
   };
 }

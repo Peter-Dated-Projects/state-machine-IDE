@@ -1,6 +1,7 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 
 import { type BaseNodeType } from "./types";
+import { useRef, useEffect, useState } from "react";
 
 import styles from "./styles/basenode.module.css";
 
@@ -39,14 +40,24 @@ export function BaseNode({
   //          },
   //        }
 
+  // Add a local state to track the current selected node
+  const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(undefined);
+
+  // Update the local state whenever the component renders
+  useEffect(() => {
+    const currentSelectedId = data.props.nodeInformation.selectedNode.getter;
+    if (currentSelectedId !== selectedNodeId) {
+      console.log("Selected node changed to:", currentSelectedId);
+      setSelectedNodeId(currentSelectedId);
+    }
+  });
+
   return (
     // We add this class to use the same styles as React Flow's default nodes.
     <div
-      className={`react-flow__node-default ${selected ? "selected" : ""}`}
+      className={`react-flow__node-default ${selected ? styles.selected : ""}`}
       style={{ padding: 2, zIndex: `${zIndex}` }}
       onClick={() => {
-        // set current node to self
-        // console.log(id);
         data.props.nodeInformation.selectedNode.setter(id);
       }}
     >
@@ -65,8 +76,17 @@ export function BaseNode({
 
       {/* write some logic about edge hovering + input + output handling */}
 
-      <Handle type="source" position={Position.Bottom} />
-      <Handle type="target" position={Position.Top} />
+      <div style={{ visibility: selected ? "visible" : "hidden" }}>
+        <Handle type="source" position={Position.Bottom} />
+      </div>
+
+      <div
+        style={{
+          visibility: !selected ? "visible" : "hidden",
+        }}
+      >
+        <Handle type="target" position={Position.Top} />
+      </div>
     </div>
   );
 }

@@ -32,6 +32,7 @@ export interface GlobalEdgeInformation {
   selectedEdge: StateManagerProps<string | undefined>;
   hoveringEdge: StateManagerProps<string | undefined>;
   activeEdges: StateManagerProps<Map<string, LocalEdgeObject>>;
+  creatingNewEdge: StateManagerProps<string | undefined>;
 }
 
 export interface SharedProgramData {
@@ -74,9 +75,12 @@ export default function Home() {
   const [selectedNodeData, setSelectedNodeData] = useState<string | undefined>(undefined);
   const [hoveringNodeData, setHoveringNodeData] = useState<string | undefined>(undefined);
   const [activeNodesData, setActiveNodesData] = useState<Map<string, LocalNodeObject>>(new Map());
+
   const [selectedEdgeData, setSelectedEdgeData] = useState<string | undefined>(undefined);
   const [hoveringEdgeData, setHoveringEdgeData] = useState<string | undefined>(undefined);
   const [activeEdgesData, setActiveEdgesData] = useState<Map<string, LocalEdgeObject>>(new Map());
+  const [creatingNewEdgeData, setCreatingNewEdgeData] = useState<string | undefined>(undefined);
+
   const sharedData: SharedProgramData = {
     editorWidth: { getter: editorWidth, setter: setEditorWidth },
     nodeInformation: {
@@ -88,6 +92,7 @@ export default function Home() {
       selectedEdge: { getter: selectedEdgeData, setter: setSelectedEdgeData },
       hoveringEdge: { getter: hoveringEdgeData, setter: setHoveringEdgeData },
       activeEdges: { getter: activeEdgesData, setter: setActiveEdgesData },
+      creatingNewEdge: { getter: creatingNewEdgeData, setter: setCreatingNewEdgeData },
     },
   };
 

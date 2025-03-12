@@ -10,3 +10,8 @@
 .content-container {
   padding: 5px;
 }
+
+.selected {
+  transition: 0.3s;
+  filter: brightness(1.3);
+}

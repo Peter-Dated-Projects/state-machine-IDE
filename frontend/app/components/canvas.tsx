@@ -8,7 +8,6 @@ import {
   addEdge,
   useNodesState,
   useEdgesState,
-  useReactFlow,
   Connection,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -52,21 +51,69 @@ export default function CanvasWindow({ props }: CanvasProps) {
       setEdges((edges) => addEdge(newEdge, edges));
 
       // Also update your global edge state
-      props.edgeInformation.activeEdges.setter(
-        new Map([
-          ...props.edgeInformation.activeEdges.getter,
-          [
-            edgeId,
-            {
-              source: connection.source,
-              target: connection.target,
-            } as LocalEdgeObject,
-          ],
-        ])
-      );
+      const mapTemp = props.edgeInformation.activeEdges.getter;
+      mapTemp.set(edgeId, newEdge as LocalEdgeObject);
+      props.edgeInformation.activeEdges.setter(mapTemp);
+      props.edgeInformation.creatingNewEdge.setter(undefined);
+
+      console.log(mapTemp, props.edgeInformation.activeEdges.getter);
     },
-    [setEdges, props.edgeInformation.activeEdges]
+    [setEdges, props.edgeInformation.activeEdges, props.edgeInformation.creatingNewEdge]
   );
+
+  const onNodeDelete = useCallback(
+    (deletedNodes: AppNode[]) => {
+      console.log("nodedata", deletedNodes);
+      const mapTemp = props.nodeInformation.activeNodes.getter;
+
+      for (let i = 0; i < deletedNodes.length; i++) {
+        console.log(deletedNodes[i]);
+        // update local node storage
+        setNodes((nodes) => nodes.filter((node) => node.id !== deletedNodes[i].id));
+
+        // check if current node
+        if (props.nodeInformation.selectedNode.getter === deletedNodes[i].id) {
+          props.nodeInformation.selectedNode.setter(undefined);
+        }
+
+        // update global node storage
+        mapTemp.delete(deletedNodes[i].id);
+      }
+      props.nodeInformation.activeNodes.setter(mapTemp);
+    },
+    [setNodes, props.nodeInformation.activeNodes, props.nodeInformation.selectedNode]
+  );
+
+  const onEdgeDelete = useCallback(
+    (edgesToDelete: Edge[]) => {
+      const mapTemp = props.edgeInformation.activeEdges.getter;
+
+      for (let i = 0; i < edgesToDelete.length; i++) {
+        // update local edge storage
+        setEdges((edges) => edges.filter((edge) => edge.id !== edgesToDelete[i].id));
+
+        // check if current edge
+        if (props.edgeInformation.selectedEdge.getter === edgesToDelete[i].id) {
+          props.edgeInformation.selectedEdge.setter(undefined);
+        }
+
+        // update global edge storage
+        mapTemp.delete(edgesToDelete[i].id);
+      }
+
+      props.edgeInformation.activeEdges.setter(mapTemp);
+    },
+    [setEdges, props.edgeInformation.activeEdges, props.edgeInformation.selectedEdge]
+  );
+
+  const onConnectStart = useCallback(() => {
+    props.edgeInformation.selectedEdge.setter(undefined);
+    props.edgeInformation.creatingNewEdge.setter(props.nodeInformation.selectedNode.getter);
+    console.log("connect start");
+
+    // Trigger a re-render of all nodes in props.nodeInformation.activeNodes
+    props.nodeInformation.activeNodes.setter(new Map(props.nodeInformation.activeNodes.getter));
+  }, [props.edgeInformation, props.nodeInformation]);
 
   // ------------------------------------- //
   // setup + starting code
@@ -166,6 +213,8 @@ export default function CanvasWindow({ props }: CanvasProps) {
     }
   }, []); // <-- Empty dependency array added
 
+  // ------------------------------------- //
+  // edge + node options
   const edgeOptions = {
     animated: true,
     style: {
@@ -173,6 +222,8 @@ export default function CanvasWindow({ props }: CanvasProps) {
     },
   };
   const connectionLineStyle = { stroke: "white" };
+
+  // no custom default node options .. all coded in basenode.tsx + etc
 
   // ------------------------------------- //
   // Control Button Functions
@@ -247,6 +298,11 @@ export default function CanvasWindow({ props }: CanvasProps) {
     console.log(props.nodeInformation.activeNodes.getter);
   }, [props, setNodes]);
 
+  const debugItems = useCallback(() => {
+    console.log("activeNodes", props.nodeInformation.activeNodes.getter);
+    console.log("activeEdges", props.edgeInformation.activeEdges.getter);
+  }, []);
+
   const controlButtons = [
     {
       icon: <DownloadIcon width={20} height={20} />,
@@ -263,6 +319,11 @@ export default function CanvasWindow({ props }: CanvasProps) {
       tooltip: "Add Node",
       onClick: clickedAddNode,
     },
+    {
+      icon: "Debug",
+      tooltip: "Outputs all active nodes and edges to console",
+      onClick: debugItems,
+    },
   ];
 
   // ------------------------------------- //
@@ -273,12 +334,15 @@ export default function CanvasWindow({ props }: CanvasProps) {
         <ReactFlow
           nodes={nodes}
           nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
           edges={edges}
           edgeTypes={edgeTypes}
           defaultEdgeOptions={edgeOptions}
+          onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onEdgesDelete={onEdgeDelete}
+          onNodesDelete={onNodeDelete}
           onConnect={onConnect}
+          onConnectStart={onConnectStart}
           connectionLineStyle={connectionLineStyle}
           fitView
           colorMode="dark"
