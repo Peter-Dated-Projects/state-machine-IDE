@@ -14,23 +14,6 @@
   padding: 5px;
 }
 
-.code-editor-admin-bar {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 0px 0px 15px 0px;
-}
-
-.code-editor-language-selector {
-  display: flex;
-  flex-direction: row;
-  width: auto;
-  margin-left: auto;
-  gap: 10px;
-  justify-content: flex-end;
-  align-content: right;
-}
-
 .nocode-container {
   width: 100%;
   padding: 5px;
@@ -62,21 +45,3 @@
 
   transition: ease 0.2s all;
 }
-
-.generate-btn {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  align-items: center;
-  padding: 10px;
-  border-radius: 8px;
-  border: 0px;
-  background-color: rgb(220, 34, 30);
-  transition: ease 0.2s all;
-}
-
-.generate-btn:hover {
-  background-color: rgb(255, 34, 20);
-}
-
-

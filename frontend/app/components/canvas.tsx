@@ -9,9 +9,15 @@ import {
   useNodesState,
   useEdgesState,
   Connection,
+  applyNodeChanges,
+  applyEdgeChanges,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { CardStackPlusIcon, CheckIcon, DownloadIcon } from "@radix-ui/react-icons";
+import {
+  CardStackPlusIcon,
+  CheckIcon,
+  DownloadIcon,
+} from "@radix-ui/react-icons";
 import { Tooltip } from "@radix-ui/themes";
 import styles from "./styles/canvas.module.css";
 import { nodeTypes, LocalNodeObject, generateLocalNodeObject } from "./nodes";
@@ -19,6 +25,8 @@ import { edgeTypes, LocalEdgeObject, generateLocalEdgeObject } from "./edges";
 import { Edge } from "@xyflow/react";
 import { SharedProgramData } from "../page";
 import { AppNode } from "./nodes/types";
+// import { ToastComponent } from "./ui/Toast";
+// import ReactDOM from "react-dom";
 
 // interface
 interface CanvasProps {
@@ -27,12 +35,19 @@ interface CanvasProps {
 
 // object
 export default function CanvasWindow({ props }: CanvasProps) {
-  // variables
-  const [nodes, setNodes, onNodesChange] = useNodesState([] as AppNode[]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
-
   // ------------------------------------- //
-  // function
+  const [nodes, setNodes] = useNodesState([] as AppNode[]);
+  const [edges, setEdges] = useEdgesState([] as Edge[]);
+
+  useEffect(() => {
+    // initialize getters
+    if (nodes.length === 0) setNodes(props.nodes.getter as AppNode[]);
+    if (edges.length === 0) setEdges(props.edges.getter as Edge[]);
+
+    // update global node & edge storage when local storage changes in CanvasWindow
+    props.nodes.setter(nodes);
+    props.edges.setter(edges);
+  }, [nodes, edges, props.nodes, props.edges, setNodes, setEdges]);
 
   // event -- when an "edge" b/t 2 nodes is created
   const onConnect = useCallback(
@@ -58,7 +73,11 @@ export default function CanvasWindow({ props }: CanvasProps) {
 
       console.log(mapTemp, props.edgeInformation.activeEdges.getter);
     },
-    [setEdges, props.edgeInformation.activeEdges, props.edgeInformation.creatingNewEdge]
+    [
+      setEdges,
+      props.edgeInformation.activeEdges,
+      props.edgeInformation.creatingNewEdge,
+    ]
   );
 
   const onNodeDelete = useCallback(
@@ -69,7 +88,9 @@ export default function CanvasWindow({ props }: CanvasProps) {
       for (let i = 0; i < deletedNodes.length; i++) {
         console.log(deletedNodes[i]);
         // update local node storage
-        setNodes((nodes) => nodes.filter((node) => node.id !== deletedNodes[i].id));
+        setNodes((nodes) =>
+          nodes.filter((node) => node.id !== deletedNodes[i].id)
+        );
 
         // check if current node
         if (props.nodeInformation.selectedNode.getter === deletedNodes[i].id) {
@@ -81,7 +102,11 @@ export default function CanvasWindow({ props }: CanvasProps) {
       }
       props.nodeInformation.activeNodes.setter(mapTemp);
     },
-    [setNodes, props.nodeInformation.activeNodes, props.nodeInformation.selectedNode]
+    [
+      setNodes,
+      props.nodeInformation.activeNodes,
+      props.nodeInformation.selectedNode,
+    ]
   );
 
   const onEdgeDelete = useCallback(
@@ -90,7 +115,9 @@ export default function CanvasWindow({ props }: CanvasProps) {
 
       for (let i = 0; i < edgesToDelete.length; i++) {
         // update local edge storage
-        setEdges((edges) => edges.filter((edge) => edge.id !== edgesToDelete[i].id));
+        setEdges((edges) =>
+          edges.filter((edge) => edge.id !== edgesToDelete[i].id)
+        );
 
         // check if current edge
         if (props.edgeInformation.selectedEdge.getter === edgesToDelete[i].id) {
@@ -103,16 +130,24 @@ export default function CanvasWindow({ props }: CanvasProps) {
 
       props.edgeInformation.activeEdges.setter(mapTemp);
     },
-    [setEdges, props.edgeInformation.activeEdges, props.edgeInformation.selectedEdge]
+    [
+      setEdges,
+      props.edgeInformation.activeEdges,
+      props.edgeInformation.selectedEdge,
+    ]
   );
 
   const onConnectStart = useCallback(() => {
     props.edgeInformation.selectedEdge.setter(undefined);
-    props.edgeInformation.creatingNewEdge.setter(props.nodeInformation.selectedNode.getter);
+    props.edgeInformation.creatingNewEdge.setter(
+      props.nodeInformation.selectedNode.getter
+    );
     console.log("connect start");
 
     // Trigger a re-render of all nodes in props.nodeInformation.activeNodes
-    props.nodeInformation.activeNodes.setter(new Map(props.nodeInformation.activeNodes.getter));
+    props.nodeInformation.activeNodes.setter(
+      new Map(props.nodeInformation.activeNodes.getter)
+    );
   }, [props.edgeInformation, props.nodeInformation]);
 
   // ------------------------------------- //
@@ -233,7 +268,8 @@ export default function CanvasWindow({ props }: CanvasProps) {
       edges: edges,
     };
     const dataStr =
-      "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(flow, null, 2));
+      "data:text/json;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(flow, null, 2));
     const downloadAnchorNode = document.createElement("a");
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", "flow.json");
@@ -264,11 +300,17 @@ export default function CanvasWindow({ props }: CanvasProps) {
   const clickedAddNode = useCallback(() => {
     const newNode = generateLocalNodeObject({
       name: "new node",
-      position: {
-        x: Math.random() * 250,
-        y: Math.random() * 250,
+      type: "base",
+      position:
+        typeof window !== "undefined"
+          ? {
+              x: Math.random() * 250,
+              y: Math.random() * 250,
+            }
+          : undefined,
+      data: {
+        label: `new node ${props.nodeInformation.activeNodes.getter.size + 1}`,
       },
-      data: { label: `new node ${props.nodeInformation.activeNodes.getter.size + 1}` },
       props: props,
     }) as AppNode;
 
@@ -337,8 +379,12 @@ export default function CanvasWindow({ props }: CanvasProps) {
           edges={edges}
           edgeTypes={edgeTypes}
           defaultEdgeOptions={edgeOptions}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
+          onNodesChange={(changes) => {
+            setNodes((nds) => applyNodeChanges(changes, nds));
+          }}
+          onEdgesChange={(changes) => {
+            setEdges((eds) => applyEdgeChanges(changes, eds));
+          }}
           onEdgesDelete={onEdgeDelete}
           onNodesDelete={onNodeDelete}
           onConnect={onConnect}
@@ -351,7 +397,10 @@ export default function CanvasWindow({ props }: CanvasProps) {
           <div className={styles["add-components-container"]}>
             {controlButtons.map((button, index) => (
               <Tooltip key={index} content={button.tooltip}>
-                <button className={styles["control-btn"]} onClick={button.onClick}>
+                <button
+                  className={styles["control-btn"]}
+                  onClick={button.onClick}
+                >
                   {button.icon}
                 </button>
               </Tooltip>

@@ -7,7 +7,7 @@ export interface LocalNodeObject {
   // local storage -- not under react flow
   id: string;
   name: string;
-  type: string;
+  type: keyof typeof nodeTypes;
   position: { x: number; y: number };
   area: { width: number; height: number };
   data: { props: SharedProgramData; label: string };
@@ -33,7 +33,7 @@ export function generateLocalNodeObject({
 
   const result = {
     id,
-    name: name ?? "empty",
+    name: name ?? "nodeName",
     type: type ?? "base",
     position: position ?? { x: 0, y: 0 },
     area: area ?? { width: 80, height: 40 },

@@ -1,21 +1,10 @@
 import styles from "./styles/baseclasstab.module.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Editor from "@monaco-editor/react";
-
-import { TabInfoProps } from "./sidebar";
+import { classInfoProps } from "./sidebar";
 import { DEFAULT_CLASS_TEXT } from "./tabinformation";
 
-// ------------------------------------------ //
-// base class input props
-// ------------------------------------------ //
-interface BaseClassTabProps {
-  props: TabInfoProps;
-}
-
-// ------------------------------------------ //
-// object
-// ------------------------------------------ //
-const BaseClassTab = ({ props }: BaseClassTabProps) => {
+const ClassEditor = (props: classInfoProps) => {
   const handleSave = (event: KeyboardEvent) => {
     if ((event.ctrlKey || event.metaKey) && event.key === "s") {
       event.preventDefault();
@@ -25,6 +14,7 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
     }
   };
 
+  // keyboard event listener for save
   useEffect(() => {
     window.addEventListener("keydown", handleSave);
 
@@ -48,20 +38,13 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
             props.baseClassCode.setter(value || "");
             props.isSaved.setter(false);
           }}
-          onMount={(editor, monaco) => {
+          onMount={(editor) => {
             editor.focus();
             props.baseClassCode.setter(editor.getValue());
             window.dispatchEvent(new CustomEvent("requestparsing"));
-
-            // loader.init().then((monacoInstance) => {
-            //   monacoInstance.editor.defineTheme("nord", nordTheme);
-            //   monacoInstance.editor.setTheme("nord");
-            // });
           }}
         />
       </div>
-
-      {/* secon section */}
       <div className={styles["nocode-container"]}>
         <div>
           <div>
@@ -69,16 +52,14 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
           </div>
           <div className={styles["class-variables-container"]}>
             {/* a section for class variables */}
-            {props.baseClassVariables.getter.map(
-              (variable: { name: string; value: string }, index: number) => (
-                <div key={index} className={styles["class-variable"]}>
-                  <div>
-                    <span>self.{variable.name}</span> ={" "}
-                    <span>{variable.value}</span>
-                  </div>
+            {props.baseClassVariables.getter.map((variable, index) => (
+              <div key={index} className={styles["class-variable"]}>
+                <div>
+                  <span>self.{variable.name}</span> ={" "}
+                  <span>{variable.value}</span>
                 </div>
-              )
-            )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -86,4 +67,4 @@ const BaseClassTab = ({ props }: BaseClassTabProps) => {
   );
 };
 
-export default BaseClassTab;
+export default ClassEditor;
