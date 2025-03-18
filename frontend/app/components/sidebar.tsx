@@ -6,6 +6,7 @@ import { BACKEND_IP } from "../globals";
 import AccordionItem from "./ui/Accordion";
 import { Accordion } from "radix-ui";
 import { Select } from "@radix-ui/themes";
+import * as Dialog from "@radix-ui/react-dialog";
 import ClassEditor from "./classeditor";
 
 interface SideBarProps {
@@ -48,18 +49,18 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   );
   const [readyToParse, setReadyToParse] = useState(false);
   const [nodeData, setNodeData] = useState<NodeData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Component Functions
   const generateCode = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmGenerate = () => {
     // send information to backend and retrieve active variables
-    // take parsed information after saving, then request backend to generate rest of code
     console.log("sending generate request");
     window.dispatchEvent(new CustomEvent("generatecode"));
-
-    // Fills in the rest of the code in baseCode and changes it in the editor
-    // TODO: popup for chatbot - later
-
-    // ============== LlamaIndex or Gemini API===============
+    setIsModalOpen(false);
   };
 
   // create nodedata effect manager
@@ -171,7 +172,10 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
             </Select.Root>
           </div>
         </div>
-        <div className={styles["accordion-container"]}>
+        <div
+          className={styles["accordion-container"]}
+          style={{ overflowY: "auto", maxHeight: "calc(100vh - 230px)" }}
+        >
           <Accordion.Root
             className={styles["AccordionRoot"]}
             type="single"
@@ -201,6 +205,36 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
       <button className={styles["generate-btn"]} onClick={generateCode}>
         Save & Generate
       </button>
+
+      <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <Dialog.Portal>
+          <Dialog.Overlay className={styles["modal-overlay"]} />
+          <Dialog.Content className={styles["modal-content"]}>
+            <Dialog.Title className={styles["modal-title"]}>
+              Generate Code
+            </Dialog.Title>
+            <Dialog.Description className={styles["modal-description"]}>
+              Are you sure you want to generate code for the current state
+              machine? This will create implementation files based on your
+              current setup.
+            </Dialog.Description>
+            <div className={styles["modal-actions"]}>
+              <button
+                className={`${styles["modal-button"]} ${styles["modal-button-secondary"]}`}
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className={`${styles["modal-button"]} ${styles["modal-button-primary"]}`}
+                onClick={handleConfirmGenerate}
+              >
+                Generate
+              </button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 };

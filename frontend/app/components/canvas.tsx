@@ -159,36 +159,36 @@ export default function CanvasWindow({ props }: CanvasProps) {
       const defaultValues = [
         {
           ...generateLocalNodeObject({
-            name: "wire",
+            name: "state",
             position: { x: 0, y: 0 },
-            data: { label: "wire" },
+            data: { label: "state" },
             props: props,
           }),
           id: "a",
         },
         {
           ...generateLocalNodeObject({
-            name: "drag me!",
+            name: "next-state",
             position: { x: -100, y: 100 },
-            data: { label: "drag me!" },
+            data: { label: "state 2" },
             props: props,
           }),
           id: "b",
         },
         {
           ...generateLocalNodeObject({
-            name: "your ideas",
+            name: "state 3",
             position: { x: 100, y: 100 },
-            data: { label: "your ideas" },
+            data: { label: "state 3" },
             props: props,
           }),
           id: "c",
         },
         {
           ...generateLocalNodeObject({
-            name: "with React Flow",
+            name: "next state",
             position: { x: 0, y: 200 },
-            data: { label: "with React Flow" },
+            data: { label: "state 4" },
             props: props,
           }),
           id: "d",

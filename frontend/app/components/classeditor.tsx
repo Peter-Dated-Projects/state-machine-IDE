@@ -1,4 +1,4 @@
-import styles from "./styles/baseclasstab.module.css";
+import styles from "./styles/classeditor.module.css";
 import React, { useCallback, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { classInfoProps } from "./sidebar";
