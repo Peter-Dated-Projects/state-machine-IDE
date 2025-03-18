@@ -2,7 +2,6 @@ import * as React from "react";
 import { forwardRef } from "react";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import * as Accordion from "@radix-ui/react-accordion";
-import classNames from "classnames";
 import styles from "../styles/accordion.module.css";
 
 interface AccordionItemProps {

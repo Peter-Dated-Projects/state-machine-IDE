@@ -86,15 +86,15 @@
   font-size: 16px;
   font-weight: 800;
   padding: 10px;
-  background-color: var(--violet-8);
+  background-color: var(--mint-11);
   cursor: pointer;
   border-radius: 8px;
-  border: 2px solid var(--violet-6);
+  border: 2px solid var(--mint-7);
   height: 50px;
   transition: ease 0.2s all;
 }
 
 .generate-btn:hover {
-  background-color: var(--violet-10);
-  border: 2px solid var(--violet-12);
+  background-color: var(--mint-8);
+  border: 2px solid var(--mint-7);
 }

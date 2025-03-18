@@ -1,18 +1,25 @@
 import styles from "./styles/baseclasstab.module.css";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { classInfoProps } from "./sidebar";
 import { DEFAULT_CLASS_TEXT } from "./tabinformation";
 
-const ClassEditor = (props: classInfoProps) => {
-  const handleSave = (event: KeyboardEvent) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === "s") {
-      event.preventDefault();
-      props.isSaved.setter(true);
-      // send information to backend and retrieve active variables
-      window.dispatchEvent(new CustomEvent("requestparsing"));
-    }
-  };
+interface classEditorProps {
+  props: classInfoProps;
+}
+
+const ClassEditor: React.FC<classEditorProps> = ({ props }) => {
+  const handleSave = useCallback(
+    (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+        event.preventDefault();
+        props.isSaved.setter(true);
+        // send information to backend and retrieve active variables
+        window.dispatchEvent(new CustomEvent("requestparsing"));
+      }
+    },
+    [props.isSaved]
+  );
 
   // keyboard event listener for save
   useEffect(() => {
@@ -21,7 +28,7 @@ const ClassEditor = (props: classInfoProps) => {
     return () => {
       window.removeEventListener("keydown", handleSave);
     };
-  }, []);
+  }, [handleSave]);
 
   // return object
   return (
@@ -30,17 +37,17 @@ const ClassEditor = (props: classInfoProps) => {
         <Editor
           height="40vh"
           width={props.editorWidth.getter}
-          language={props.baseClassLanguage.getter}
-          value={props.baseClassCode.getter}
+          language={props.classLanguage.getter}
+          value={props.classCode.getter}
           defaultValue={DEFAULT_CLASS_TEXT}
           theme="vs-dark"
           onChange={(value) => {
-            props.baseClassCode.setter(value || "");
+            props.classCode.setter(value || "");
             props.isSaved.setter(false);
           }}
           onMount={(editor) => {
             editor.focus();
-            props.baseClassCode.setter(editor.getValue());
+            props.classCode.setter(editor.getValue());
             window.dispatchEvent(new CustomEvent("requestparsing"));
           }}
         />
@@ -52,7 +59,7 @@ const ClassEditor = (props: classInfoProps) => {
           </div>
           <div className={styles["class-variables-container"]}>
             {/* a section for class variables */}
-            {props.baseClassVariables.getter.map((variable, index) => (
+            {props.classVariables.getter.map((variable, index) => (
               <div key={index} className={styles["class-variable"]}>
                 <div>
                   <span>self.{variable.name}</span> ={" "}
