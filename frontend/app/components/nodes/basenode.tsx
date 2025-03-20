@@ -1,8 +1,6 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
-
 import { type BaseNodeType } from "./types";
-import { useRef, useEffect, useState } from "react";
-
+import { useEffect, useState } from "react";
 import styles from "./styles/basenode.module.css";
 
 // more node information:
@@ -41,7 +39,9 @@ export function BaseNode({
   //        }
 
   // Add a local state to track the current selected node
-  const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(undefined);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(
+    undefined
+  );
 
   // Update the local state whenever the component renders
   useEffect(() => {
@@ -50,7 +50,7 @@ export function BaseNode({
       console.log("Selected node changed to:", currentSelectedId);
       setSelectedNodeId(currentSelectedId);
     }
-  });
+  }, [data.props.nodeInformation.selectedNode.getter, selectedNodeId]);
 
   return (
     // We add this class to use the same styles as React Flow's default nodes.

@@ -1,14 +1,17 @@
 import re
 import ast
 import dataclasses
-
 import typing
+
+from ollama import chat
+from ollama import ChatResponse
 from typing import List, Tuple, Any
 
 # --------------------------------------------------- #
 # constants
 # --------------------------------------------------- #
 
+MODEL = "deepseek-r1:1.5B"
 PARENT_CLASS_SIGNAL_LINE = "__!!__parent_class_super__!!__"
 
 # --------------------------------------------------- #

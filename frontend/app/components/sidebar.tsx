@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import styles from "./styles/sidebar.module.css";
 import { StateManagerProps, SharedProgramData } from "../page";
 import { BACKEND_IP } from "../globals";
@@ -8,6 +8,7 @@ import { Accordion } from "radix-ui";
 import { Select } from "@radix-ui/themes";
 import * as Dialog from "@radix-ui/react-dialog";
 import ClassEditor from "./classeditor";
+import { DEFAULT_CLASS_TEXT } from "./tabinformation";
 
 interface SideBarProps {
   props: SharedProgramData;
@@ -20,6 +21,7 @@ interface BackendQueryVariable {
 
 interface NodeData {
   id: string;
+  name: string;
   type: string;
 }
 
@@ -29,6 +31,7 @@ export interface classInfoProps {
   classCode: StateManagerProps<string>;
   classLanguage: StateManagerProps<string>;
   classVariables: StateManagerProps<BackendQueryVariable[]>;
+  nodeId?: string;
 }
 
 const SUPPORTED_LANGUAGES = [
@@ -42,7 +45,11 @@ const SUPPORTED_LANGUAGES = [
 
 const SideBar: React.FC<SideBarProps> = ({ props }) => {
   const [isSaved, setIsSaved] = useState(true);
-  const [classCode, setClassCode] = useState("");
+  const [nodeCodeMap, setNodeCodeMap] = useState<Map<string, string>>(() => {
+    const initialMap = new Map();
+    initialMap.set("baseClass", DEFAULT_CLASS_TEXT);
+    return initialMap;
+  });
   const [classLanguage, setClassLanguage] = useState("python");
   const [classVariables, setClassVariables] = useState<BackendQueryVariable[]>(
     []
@@ -50,6 +57,11 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   const [readyToParse, setReadyToParse] = useState(false);
   const [nodeData, setNodeData] = useState<NodeData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Component Functions
   const generateCode = () => {
@@ -57,7 +69,6 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   };
 
   const handleConfirmGenerate = () => {
-    // send information to backend and retrieve active variables
     console.log("sending generate request");
     window.dispatchEvent(new CustomEvent("generatecode"));
     setIsModalOpen(false);
@@ -65,14 +76,17 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
 
   // create nodedata effect manager
   useEffect(() => {
-    // get node information
     const nodeInfo = props.nodeInformation.selectedNode.getter
       ? props.nodeInformation.activeNodes.getter.get(
           props.nodeInformation.selectedNode.getter || ""
         )
       : null;
     if (nodeInfo) {
-      setNodeData({ id: nodeInfo.id, type: nodeInfo.type });
+      setNodeData({
+        id: nodeInfo.id,
+        name: nodeInfo.name,
+        type: nodeInfo.type,
+      });
     } else {
       setNodeData(null);
     }
@@ -81,12 +95,31 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     props.nodeInformation.selectedNode.getter,
   ]);
 
-  // Memoize the tab information
-  const classInfo = useMemo(
+  // Get the code for a given node
+  const getNodeCode = useCallback(
+    (nodeId: string) => {
+      return nodeCodeMap.get(nodeId) || "";
+    },
+    [nodeCodeMap]
+  );
+
+  const setNodeCode = useCallback(
+    (nodeId: string, code: string) => {
+      setNodeCodeMap(new Map(nodeCodeMap.set(nodeId, code)));
+      setIsSaved(true);
+    },
+    [nodeCodeMap]
+  );
+
+  // Memoize the base class info
+  const baseClassInfo = useMemo(
     () => ({
       isSaved: { getter: isSaved, setter: setIsSaved },
       editorWidth: props.editorWidth,
-      classCode: { getter: classCode, setter: setClassCode },
+      classCode: {
+        getter: getNodeCode("baseClass"),
+        setter: (code: string) => setNodeCode("baseClass", code),
+      },
       classLanguage: {
         getter: classLanguage,
         setter: setClassLanguage,
@@ -95,14 +128,17 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
         getter: classVariables,
         setter: setClassVariables,
       },
+      nodeId: "baseClass",
     }),
-    [classCode, classLanguage, classVariables, props.editorWidth, isSaved]
+    [
+      classLanguage,
+      classVariables,
+      props.editorWidth,
+      isSaved,
+      getNodeCode,
+      setNodeCode,
+    ]
   );
-
-  // Log the class code
-  useEffect(() => {
-    console.log("Class Code:", classInfo.classCode.getter);
-  }, [classInfo.classCode.getter]);
 
   // Parse the class code
   useEffect(() => {
@@ -112,30 +148,35 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
       window.removeEventListener("requestparsing", handleRequestParsing);
   }, []);
 
-  // Send the base class code to the backend for parsing
+  // Send the class code to the backend for parsing
   useEffect(() => {
     if (!readyToParse) return;
     fetch(`${BACKEND_IP}/api/code-parser`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        code: classInfo.classCode.getter,
-        language: classInfo.classLanguage.getter,
+        code: nodeData ? getNodeCode(nodeData.id) : getNodeCode("baseClass"),
+        language: classLanguage,
       }),
     })
       .then((res) => res.json())
-      .then((data) => classInfo.classVariables.setter(data.variables))
+      .then((data) => setClassVariables(data.variables))
       .catch(console.error);
     setReadyToParse(false);
-  }, [readyToParse, classInfo]);
+  }, [readyToParse, nodeData, classLanguage, nodeCodeMap, getNodeCode]);
 
-  // Generate the base class code
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.nodeInfo}>
         <h3>Current Node:</h3>
         <div className={styles.currentNodeDisplay}>
-          {nodeData ? `${nodeData.id} — ${nodeData.type}` : "No Selected Node"}
+          {nodeData
+            ? `${nodeData.name} — ${nodeData.type}`
+            : "No Selected Node"}
         </div>
       </div>
       <section className={styles["editorSection"]}>
@@ -184,20 +225,33 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
           >
             <AccordionItem
               title={"Base Class"}
-              content={<ClassEditor key={"Base Class"} props={classInfo} />}
+              content={<ClassEditor key={"Base Class"} props={baseClassInfo} />}
               value={"baseClass"}
             />
             {Array.from(props.nodeInformation.activeNodes.getter.values()).map(
-              (node) => (
-                <AccordionItem
-                  key={node.id}
-                  title={`${node.id}`}
-                  content={
-                    <ClassEditor key={`${node.id}ClassTab`} props={classInfo} />
-                  }
-                  value={node.id}
-                />
-              )
+              (node) => {
+                const nodeClassInfo = {
+                  ...baseClassInfo,
+                  classCode: {
+                    getter: getNodeCode(node.id),
+                    setter: (code: string) => setNodeCode(node.id, code),
+                  },
+                  nodeId: node.id,
+                };
+                return (
+                  <AccordionItem
+                    key={node.id}
+                    title={`${node.name}`}
+                    content={
+                      <ClassEditor
+                        key={`${node.id}-classtab`}
+                        props={nodeClassInfo}
+                      />
+                    }
+                    value={node.id}
+                  />
+                );
+              }
             )}
           </Accordion.Root>
         </div>
