@@ -1,8 +1,6 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
-
 import { type BaseNodeType } from "./types";
-import { useRef, useEffect, useState } from "react";
-
+import { generateLocalHandleObject } from "../edges/handle";
 import styles from "./styles/basenode.module.css";
 
 // more node information:
@@ -14,6 +12,8 @@ import styles from "./styles/basenode.module.css";
 // TODO - consider creating own node system
 // like screw react-flow lol
 
+// ------------------------------------- //
+// Base Node
 export function BaseNode({
   positionAbsoluteX,
   positionAbsoluteY,
@@ -40,52 +40,79 @@ export function BaseNode({
   //          },
   //        }
 
-  // Add a local state to track the current selected node
-  const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>(undefined);
+  const sourceHandles = [
+    generateLocalHandleObject({ position: Position.Top, type: "source" }),
+    generateLocalHandleObject({ position: Position.Bottom, type: "source" }),
+    generateLocalHandleObject({ position: Position.Left, type: "source" }),
+    generateLocalHandleObject({ position: Position.Right, type: "source" }),
+  ];
 
-  // Update the local state whenever the component renders
-  useEffect(() => {
-    const currentSelectedId = data.props.nodeInformation.selectedNode.getter;
-    if (currentSelectedId !== selectedNodeId) {
-      console.log("Selected node changed to:", currentSelectedId);
-      setSelectedNodeId(currentSelectedId);
-    }
-  });
+  const targetHandles = [
+    generateLocalHandleObject({ position: Position.Bottom, type: "target" }),
+    generateLocalHandleObject({ position: Position.Top, type: "target" }),
+    generateLocalHandleObject({ position: Position.Left, type: "target" }),
+    generateLocalHandleObject({ position: Position.Right, type: "target" }),
+  ];
 
   return (
     // We add this class to use the same styles as React Flow's default nodes.
-    <div
-      className={`react-flow__node-default ${selected ? styles.selected : ""}`}
-      style={{ padding: 2, zIndex: `${zIndex}` }}
-      onClick={() => {
-        data.props.nodeInformation.selectedNode.setter(id);
-      }}
-    >
-      <div className={styles.container}>
-        <div>
-          <span>
-            {Math.round(positionAbsoluteX)},{Math.round(positionAbsoluteY)}
-          </span>
+    <div style={{ margin: "0px" }}>
+      <div
+        className={`react-flow__node-default ${selected ? styles.selected : ""}`}
+        style={{ padding: 2, zIndex: `${zIndex}` }}
+      >
+        <div className={styles.container}>
+          <div>
+            <span>
+              {Math.round(positionAbsoluteX)},{Math.round(positionAbsoluteY)}
+            </span>
+          </div>
         </div>
-      </div>
-      <div className={styles["content-container"]}>
-        <div style={{ visibility: "hidden", position: "absolute" }}>{id}</div>
-        {data.label && <div>{data.label}</div>}
-      </div>
-      <div style={{ height: "10px" }}></div>
-
-      {/* write some logic about edge hovering + input + output handling */}
-
-      <div style={{ visibility: selected ? "visible" : "hidden" }}>
-        <Handle type="source" position={Position.Bottom} />
+        <div className={styles["content-container"]}>
+          <div style={{ visibility: "hidden", position: "absolute" }}>{id}</div>
+          {data.label && <div>{data.label}</div>}
+        </div>
+        <div style={{ height: "10px" }}></div>
       </div>
 
+      {/* source handles*/}
       <div
         style={{
-          visibility: !selected ? "visible" : "hidden",
+          visibility: selected ? "visible" : "hidden",
         }}
       >
-        <Handle type="target" position={Position.Top} />
+        {sourceHandles.map((handle) => {
+          // console.log(handle.id);
+          return (
+            <Handle
+              key={handle.id}
+              position={handle.position}
+              type={handle.type}
+              id={handle.id}
+              isConnectable={true}
+            />
+          );
+        })}
+      </div>
+
+      {/* target handles */}
+      <div
+        style={{
+          visibility:
+            data.props.edgeInformation.creatingNewEdge.getter != undefined ? "visible" : "hidden",
+        }}
+      >
+        {targetHandles.map((handle) => {
+          return (
+            <Handle
+              key={handle.id}
+              position={handle.position}
+              type={handle.type}
+              id={handle.id}
+              isConnectable={data.props.edgeInformation.creatingNewEdge.getter != id}
+            />
+          );
+        })}
       </div>
     </div>
   );

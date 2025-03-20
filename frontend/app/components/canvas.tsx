@@ -13,11 +13,7 @@ import {
   applyEdgeChanges,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import {
-  CardStackPlusIcon,
-  CheckIcon,
-  DownloadIcon,
-} from "@radix-ui/react-icons";
+import { CardStackPlusIcon, CheckIcon, DownloadIcon } from "@radix-ui/react-icons";
 import { Tooltip } from "@radix-ui/themes";
 import styles from "./styles/canvas.module.css";
 import { nodeTypes, LocalNodeObject, generateLocalNodeObject } from "./nodes";
@@ -25,8 +21,6 @@ import { edgeTypes, LocalEdgeObject, generateLocalEdgeObject } from "./edges";
 import { Edge } from "@xyflow/react";
 import { SharedProgramData } from "../page";
 import { AppNode } from "./nodes/types";
-// import { ToastComponent } from "./ui/Toast";
-// import ReactDOM from "react-dom";
 
 // interface
 interface CanvasProps {
@@ -50,35 +44,6 @@ export default function CanvasWindow({ props }: CanvasProps) {
   }, [nodes, edges, props.nodes, props.edges, setNodes, setEdges]);
 
   // event -- when an "edge" b/t 2 nodes is created
-  const onConnect = useCallback(
-    (connection: Connection) => {
-      // Generate a unique ID for the new edge
-      const edgeId = `${connection.source}->${connection.target}`;
-
-      // Create the edge object without type casting
-      const newEdge: Edge = {
-        ...connection,
-        id: edgeId,
-        animated: true,
-      };
-
-      // Update ReactFlow edges state
-      setEdges((edges) => addEdge(newEdge, edges));
-
-      // Also update your global edge state
-      const mapTemp = props.edgeInformation.activeEdges.getter;
-      mapTemp.set(edgeId, newEdge as LocalEdgeObject);
-      props.edgeInformation.activeEdges.setter(mapTemp);
-      props.edgeInformation.creatingNewEdge.setter(undefined);
-
-      console.log(mapTemp, props.edgeInformation.activeEdges.getter);
-    },
-    [
-      setEdges,
-      props.edgeInformation.activeEdges,
-      props.edgeInformation.creatingNewEdge,
-    ]
-  );
 
   const onNodeDelete = useCallback(
     (deletedNodes: AppNode[]) => {
@@ -88,9 +53,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
       for (let i = 0; i < deletedNodes.length; i++) {
         console.log(deletedNodes[i]);
         // update local node storage
-        setNodes((nodes) =>
-          nodes.filter((node) => node.id !== deletedNodes[i].id)
-        );
+        setNodes((nodes) => nodes.filter((node) => node.id !== deletedNodes[i].id));
 
         // check if current node
         if (props.nodeInformation.selectedNode.getter === deletedNodes[i].id) {
@@ -102,11 +65,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
       }
       props.nodeInformation.activeNodes.setter(mapTemp);
     },
-    [
-      setNodes,
-      props.nodeInformation.activeNodes,
-      props.nodeInformation.selectedNode,
-    ]
+    [setNodes, props.nodeInformation.activeNodes, props.nodeInformation.selectedNode]
   );
 
   const onEdgeDelete = useCallback(
@@ -115,9 +74,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
 
       for (let i = 0; i < edgesToDelete.length; i++) {
         // update local edge storage
-        setEdges((edges) =>
-          edges.filter((edge) => edge.id !== edgesToDelete[i].id)
-        );
+        setEdges((edges) => edges.filter((edge) => edge.id !== edgesToDelete[i].id));
 
         // check if current edge
         if (props.edgeInformation.selectedEdge.getter === edgesToDelete[i].id) {
@@ -130,25 +87,8 @@ export default function CanvasWindow({ props }: CanvasProps) {
 
       props.edgeInformation.activeEdges.setter(mapTemp);
     },
-    [
-      setEdges,
-      props.edgeInformation.activeEdges,
-      props.edgeInformation.selectedEdge,
-    ]
+    [setEdges, props.edgeInformation.activeEdges, props.edgeInformation.selectedEdge]
   );
-
-  const onConnectStart = useCallback(() => {
-    props.edgeInformation.selectedEdge.setter(undefined);
-    props.edgeInformation.creatingNewEdge.setter(
-      props.nodeInformation.selectedNode.getter
-    );
-    console.log("connect start");
-
-    // Trigger a re-render of all nodes in props.nodeInformation.activeNodes
-    props.nodeInformation.activeNodes.setter(
-      new Map(props.nodeInformation.activeNodes.getter)
-    );
-  }, [props.edgeInformation, props.nodeInformation]);
 
   // ------------------------------------- //
   // setup + starting code
@@ -196,19 +136,13 @@ export default function CanvasWindow({ props }: CanvasProps) {
       ] as LocalNodeObject[];
       setNodes(defaultValues as AppNode[]);
 
+      console.log(defaultValues);
+
       // update values in props.activeNodes
       props.nodeInformation.activeNodes.setter(
         new Map(
           defaultValues.map((node) => {
-            return [
-              node.id,
-              {
-                id: node.id,
-                name: node.data.label,
-                type: node.type,
-                position: node.position,
-              } as LocalNodeObject,
-            ];
+            return [node.id, node];
           })
         )
       );
@@ -216,16 +150,27 @@ export default function CanvasWindow({ props }: CanvasProps) {
       // -- also setup edges
       const defaultEdges: Edge[] = [
         generateLocalEdgeObject({
-          id: "a->c",
+          id: crypto.randomUUID(),
           source: "a",
           target: "c",
+          sourceHandle: "bottom_source",
+          targetHandle: "top_target",
           animated: true,
         }),
-        generateLocalEdgeObject({ id: "b->d", source: "b", target: "d" }),
         generateLocalEdgeObject({
-          id: "c->d",
+          id: crypto.randomUUID(),
+          source: "b",
+          target: "d",
+          sourceHandle: "bottom_source",
+          targetHandle: "top_target",
+          animated: true,
+        }),
+        generateLocalEdgeObject({
+          id: crypto.randomUUID(),
           source: "c",
           target: "d",
+          sourceHandle: "bottom_source",
+          targetHandle: "top_target",
           animated: true,
         }),
       ];
@@ -246,7 +191,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
         )
       );
     }
-  }, []); // <-- Empty dependency array added
+  }); // <-- Empty dependency array added
 
   // ------------------------------------- //
   // edge + node options
@@ -268,8 +213,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
       edges: edges,
     };
     const dataStr =
-      "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(flow, null, 2));
+      "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(flow, null, 2));
     const downloadAnchorNode = document.createElement("a");
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", "flow.json");
@@ -332,9 +276,9 @@ export default function CanvasWindow({ props }: CanvasProps) {
     mapTemp.set(newNode.id, {
       id: newNode.id,
       name: newNode.data.label,
-      type: newNode.type,
+      type: "base",
       position: newNode.position,
-    });
+    } as LocalNodeObject);
     props.nodeInformation.activeNodes.setter(mapTemp);
 
     console.log(props.nodeInformation.activeNodes.getter);
@@ -379,16 +323,104 @@ export default function CanvasWindow({ props }: CanvasProps) {
           edges={edges}
           edgeTypes={edgeTypes}
           defaultEdgeOptions={edgeOptions}
+          // -------------------------------------------------------------------------- //
+          // node events
           onNodesChange={(changes) => {
             setNodes((nds) => applyNodeChanges(changes, nds));
+
+            // console.log(changes);
+
+            // update position of local nodes
+            // for (let i = 0; i < changes.length; i++) {
+            //   const change = changes[i];
+
+            //   if (change.type == "position") {
+            //     const node = props.nodeInformation.activeNodes.getter.get(change.id);
+            //     if (change.position != undefined && node != undefined) {
+            //       node.position = change.position;
+            //     }
+            //   }
+            // }
           }}
+          onNodeClick={(event, node) => {
+            // this is a node click event
+            props.nodeInformation.selectedNode.setter(node.id);
+          }}
+          onNodeMouseEnter={(event, node) => {
+            // this is a mouse enter event
+            // console.log("mouse enter", node);
+            props.nodeInformation.hoveringNode.setter(node.id);
+          }}
+          onPaneClick={() => {
+            // this is a pane click event
+            props.nodeInformation.selectedNode.setter(undefined);
+            props.edgeInformation.selectedEdge.setter(undefined);
+          }}
+          // -------------------------------------------------------------------------- //
+          // edge events
           onEdgesChange={(changes) => {
             setEdges((eds) => applyEdgeChanges(changes, eds));
           }}
+          onEdgeClick={(event, edge) => {
+            // this is an edge click event
+            props.edgeInformation.selectedEdge.setter(edge.id);
+          }}
+          // no edge double click event
+          // no edge right click event
+          // -------------------------------------------------------------------------- //
+          // connection events
+          onConnect={(connection: Connection) => {
+            // Generate a unique ID for the new edge
+            const edgeId = crypto.randomUUID();
+
+            // Retrieve the source and target node objects
+            const sourceNode = props.nodeInformation.activeNodes.getter.get(connection.source);
+            const targetNode = props.nodeInformation.activeNodes.getter.get(connection.target);
+
+            // Compute a flow direction based on node positions.
+            // This is a simple rule: if the source's x is less than the target's x,
+            // then "normal" (i.e. animation flows left-to-right from source to target).
+            // Otherwise, use "reverse".
+            let flowDirection = "normal";
+            if (sourceNode && targetNode) {
+              flowDirection = sourceNode.position.x < targetNode.position.x ? "normal" : "reverse";
+
+              console.log(sourceNode, targetNode);
+
+              sourceNode.data.connections.push(edgeId);
+              targetNode.data.connections.push(edgeId);
+            }
+
+            // Create the edge object, adding the computed animationDirection in its data
+            const newEdge: Edge = {
+              ...connection,
+              id: edgeId,
+              type: "base",
+              animated: true,
+              data: { animationDirection: flowDirection },
+            };
+
+            // Update ReactFlow edges state
+            setEdges((edges) => addEdge(newEdge, edges));
+
+            // Also update your global edge state
+            const mapTemp = props.edgeInformation.activeEdges.getter;
+            mapTemp.set(edgeId, newEdge as LocalEdgeObject);
+            props.edgeInformation.activeEdges.setter(mapTemp);
+            props.edgeInformation.creatingNewEdge.setter(undefined);
+          }}
+          onConnectStart={() => {
+            props.edgeInformation.selectedEdge.setter(undefined);
+            props.edgeInformation.creatingNewEdge.setter(props.nodeInformation.selectedNode.getter);
+            console.log("connect start");
+          }}
+          onConnectEnd={() => {
+            props.edgeInformation.creatingNewEdge.setter(undefined);
+          }}
+          // -------------------------------------------------------------------------- //
+          // delete events
           onEdgesDelete={onEdgeDelete}
           onNodesDelete={onNodeDelete}
-          onConnect={onConnect}
-          onConnectStart={onConnectStart}
           connectionLineStyle={connectionLineStyle}
           fitView
           colorMode="dark"
@@ -397,10 +429,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
           <div className={styles["add-components-container"]}>
             {controlButtons.map((button, index) => (
               <Tooltip key={index} content={button.tooltip}>
-                <button
-                  className={styles["control-btn"]}
-                  onClick={button.onClick}
-                >
+                <button className={styles["control-btn"]} onClick={button.onClick}>
                   {button.icon}
                 </button>
               </Tooltip>

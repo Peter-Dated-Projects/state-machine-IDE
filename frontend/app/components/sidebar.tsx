@@ -31,22 +31,13 @@ export interface classInfoProps {
   classVariables: StateManagerProps<BackendQueryVariable[]>;
 }
 
-const SUPPORTED_LANGUAGES = [
-  "python",
-  "javascript",
-  "typescript",
-  "java",
-  "c++",
-  "c#",
-];
+const SUPPORTED_LANGUAGES = ["python", "javascript", "typescript", "java", "c++", "c#"];
 
 const SideBar: React.FC<SideBarProps> = ({ props }) => {
   const [isSaved, setIsSaved] = useState(true);
   const [classCode, setClassCode] = useState("");
   const [classLanguage, setClassLanguage] = useState("python");
-  const [classVariables, setClassVariables] = useState<BackendQueryVariable[]>(
-    []
-  );
+  const [classVariables, setClassVariables] = useState<BackendQueryVariable[]>([]);
   const [readyToParse, setReadyToParse] = useState(false);
   const [nodeData, setNodeData] = useState<NodeData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,10 +67,7 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     } else {
       setNodeData(null);
     }
-  }, [
-    props.nodeInformation.activeNodes.getter,
-    props.nodeInformation.selectedNode.getter,
-  ]);
+  }, [props.nodeInformation.activeNodes.getter, props.nodeInformation.selectedNode.getter]);
 
   // Memoize the tab information
   const classInfo = useMemo(
@@ -108,8 +96,7 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   useEffect(() => {
     const handleRequestParsing = () => setReadyToParse(true);
     window.addEventListener("requestparsing", handleRequestParsing);
-    return () =>
-      window.removeEventListener("requestparsing", handleRequestParsing);
+    return () => window.removeEventListener("requestparsing", handleRequestParsing);
   }, []);
 
   // Send the base class code to the backend for parsing
@@ -145,26 +132,14 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
           </div>
           <div className={styles["code-editor-language-selector"]}>
             <svg height="17" width="17" style={{ alignSelf: "center" }}>
-              <circle
-                cx="8.5"
-                cy="8.5"
-                r="8"
-                fill={isSaved ? "lightgreen" : "red"}
-              />
+              <circle cx="8.5" cy="8.5" r="8" fill={isSaved ? "lightgreen" : "red"} />
             </svg>
 
-            <Select.Root
-              value={classLanguage}
-              onValueChange={(value) => setClassLanguage(value)}
-            >
+            <Select.Root value={classLanguage} onValueChange={(value) => setClassLanguage(value)}>
               <Select.Trigger style={{ cursor: "pointer" }} />
               <Select.Content position="popper">
                 {SUPPORTED_LANGUAGES.map((language) => (
-                  <Select.Item
-                    key={language}
-                    value={language}
-                    style={{ cursor: "pointer" }}
-                  >
+                  <Select.Item key={language} value={language} style={{ cursor: "pointer" }}>
                     {language}
                   </Select.Item>
                 ))}
@@ -187,18 +162,14 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
               content={<ClassEditor key={"Base Class"} props={classInfo} />}
               value={"baseClass"}
             />
-            {Array.from(props.nodeInformation.activeNodes.getter.values()).map(
-              (node) => (
-                <AccordionItem
-                  key={node.id}
-                  title={`${node.id}`}
-                  content={
-                    <ClassEditor key={`${node.id}ClassTab`} props={classInfo} />
-                  }
-                  value={node.id}
-                />
-              )
-            )}
+            {Array.from(props.nodeInformation.activeNodes.getter.values()).map((node) => (
+              <AccordionItem
+                key={node.id}
+                title={`${node.id}`}
+                content={<ClassEditor key={`${node.id}ClassTab`} props={classInfo} />}
+                value={node.id}
+              />
+            ))}
           </Accordion.Root>
         </div>
       </section>
@@ -210,13 +181,10 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
         <Dialog.Portal>
           <Dialog.Overlay className={styles["modal-overlay"]} />
           <Dialog.Content className={styles["modal-content"]}>
-            <Dialog.Title className={styles["modal-title"]}>
-              Generate Code
-            </Dialog.Title>
+            <Dialog.Title className={styles["modal-title"]}>Generate Code</Dialog.Title>
             <Dialog.Description className={styles["modal-description"]}>
-              Are you sure you want to generate code for the current state
-              machine? This will create implementation files based on your
-              current setup.
+              Are you sure you want to generate code for the current state machine? This will create
+              implementation files based on your current setup.
             </Dialog.Description>
             <div className={styles["modal-actions"]}>
               <button

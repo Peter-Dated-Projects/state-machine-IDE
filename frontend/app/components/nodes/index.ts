@@ -10,7 +10,7 @@ export interface LocalNodeObject {
   type: keyof typeof nodeTypes;
   position: { x: number; y: number };
   area: { width: number; height: number };
-  data: { props: SharedProgramData; label: string };
+  data: { props: SharedProgramData; label: string; connections: string[] };
 }
 
 interface localNodeGeneratorProps {
@@ -37,11 +37,13 @@ export function generateLocalNodeObject({
     type: type ?? "base",
     position: position ?? { x: 0, y: 0 },
     area: area ?? { width: 80, height: 40 },
-    data: { ...data, props: props },
+    data: { ...data, props: props, connections: [] },
   };
   if (result.data.label === undefined) {
     result.data.label = result.name;
   }
+
+  console.log(result);
   return result as LocalNodeObject;
 }
 

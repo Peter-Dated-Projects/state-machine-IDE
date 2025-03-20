@@ -3,12 +3,7 @@ import styles from "./page.module.css";
 import React, { useState, useCallback } from "react";
 import SideBar from "./components/sidebar";
 import CanvasWindow from "./components/canvas";
-import {
-  Edge,
-  ReactFlowProvider,
-  useEdgesState,
-  useNodesState,
-} from "@xyflow/react";
+import { Edge, ReactFlowProvider, useEdgesState, useNodesState } from "@xyflow/react";
 
 import { LocalEdgeObject } from "./components/edges";
 import { LocalNodeObject } from "./components/nodes";
@@ -83,28 +78,14 @@ export default function Home() {
   const [edges, setEdges] = useEdgesState([] as Edge[]);
 
   // Shared program state
-  const [selectedNodeData, setSelectedNodeData] = useState<string | undefined>(
-    undefined
-  );
-  const [hoveringNodeData, setHoveringNodeData] = useState<string | undefined>(
-    undefined
-  );
-  const [activeNodesData, setActiveNodesData] = useState<
-    Map<string, LocalNodeObject>
-  >(new Map());
+  const [selectedNodeData, setSelectedNodeData] = useState<string | undefined>(undefined);
+  const [hoveringNodeData, setHoveringNodeData] = useState<string | undefined>(undefined);
+  const [activeNodesData, setActiveNodesData] = useState<Map<string, LocalNodeObject>>(new Map());
 
-  const [selectedEdgeData, setSelectedEdgeData] = useState<string | undefined>(
-    undefined
-  );
-  const [hoveringEdgeData, setHoveringEdgeData] = useState<string | undefined>(
-    undefined
-  );
-  const [activeEdgesData, setActiveEdgesData] = useState<
-    Map<string, LocalEdgeObject>
-  >(new Map());
-  const [creatingNewEdgeData, setCreatingNewEdgeData] = useState<
-    string | undefined
-  >(undefined);
+  const [selectedEdgeData, setSelectedEdgeData] = useState<string | undefined>(undefined);
+  const [hoveringEdgeData, setHoveringEdgeData] = useState<string | undefined>(undefined);
+  const [activeEdgesData, setActiveEdgesData] = useState<Map<string, LocalEdgeObject>>(new Map());
+  const [creatingNewEdgeData, setCreatingNewEdgeData] = useState<string | undefined>(undefined);
 
   const sharedData: SharedProgramData = {
     editorWidth: { getter: editorWidth, setter: setEditorWidth },
@@ -128,10 +109,7 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      <div
-        className={styles.container}
-        style={{ display: "flex", height: "100vh" }}
-      >
+      <div className={styles.container} style={{ display: "flex", height: "100vh" }}>
         {/* Sidebar */}
         <div
           style={{
