@@ -101,7 +101,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
           ...generateLocalNodeObject({
             name: "state",
             position: { x: 0, y: 0 },
-            data: { label: "state" },
+            data: { label: "state", classCode: "" },
             props: props,
           }),
           id: "a",
@@ -110,7 +110,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
           ...generateLocalNodeObject({
             name: "next-state",
             position: { x: -100, y: 100 },
-            data: { label: "state 2" },
+            data: { label: "state 2", classCode: "" },
             props: props,
           }),
           id: "b",
@@ -119,7 +119,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
           ...generateLocalNodeObject({
             name: "state 3",
             position: { x: 100, y: 100 },
-            data: { label: "state 3" },
+            data: { label: "state 3", classCode: "" },
             props: props,
           }),
           id: "c",
@@ -128,7 +128,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
           ...generateLocalNodeObject({
             name: "next state",
             position: { x: 0, y: 200 },
-            data: { label: "state 4" },
+            data: { label: "state 4", classCode: "" },
             props: props,
           }),
           id: "d",
@@ -254,6 +254,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
           : undefined,
       data: {
         label: `new node ${props.nodeInformation.activeNodes.getter.size + 1}`,
+        classCode: "",
       },
       props: props,
     }) as AppNode;
@@ -287,7 +288,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
   const debugItems = useCallback(() => {
     console.log("activeNodes", props.nodeInformation.activeNodes.getter);
     console.log("activeEdges", props.edgeInformation.activeEdges.getter);
-  }, []);
+  }, [props.edgeInformation, props.nodeInformation]);
 
   const controlButtons = [
     {
