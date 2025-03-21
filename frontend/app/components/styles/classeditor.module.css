@@ -14,14 +14,6 @@
   padding: 5px;
 }
 
-.nocode-container {
-  width: 100%;
-  padding: 5px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
 .class-variables-container {
   padding: 5px;
   width: 100%;
