@@ -3,6 +3,10 @@ import { type BaseNodeType } from "./types";
 import { generateLocalHandleObject } from "../edges/handle";
 import styles from "./styles/basenode.module.css";
 
+import { useState } from "react";
+
+import { NODE_NAME_CHANGE_EVENT } from "@/app/globals";
+
 // more node information:
 // https://reactflow.dev/api-reference/types/node
 
@@ -54,6 +58,8 @@ export function BaseNode({
     generateLocalHandleObject({ position: Position.Right, type: "target" }),
   ];
 
+  const [labelValue, setLabelValue] = useState<string>(data.label);
+
   return (
     // We add this class to use the same styles as React Flow's default nodes.
     <div style={{ margin: "0px" }}>
@@ -70,7 +76,26 @@ export function BaseNode({
         </div>
         <div className={styles["content-container"]}>
           <div style={{ visibility: "hidden", position: "absolute" }}>{id}</div>
-          {data.label && <div>{data.label}</div>}
+          <div>
+            <input
+              value={labelValue}
+              onChange={(e) => {
+                // check if value is null now
+                if (e.target.value == "" || e.target.value == null) {
+                  setLabelValue("");
+                } else {
+                  setLabelValue(e.target.value);
+                }
+
+                const newEvent = new CustomEvent(NODE_NAME_CHANGE_EVENT, {
+                  detail: { nodeid: id, value: e.target.value },
+                  bubbles: true,
+                  cancelable: true,
+                });
+                document.dispatchEvent(newEvent);
+              }}
+            ></input>
+          </div>
         </div>
         <div style={{ height: "10px" }}></div>
       </div>

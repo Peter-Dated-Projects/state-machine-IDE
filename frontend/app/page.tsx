@@ -107,6 +107,10 @@ export default function Home() {
     },
   };
 
+  // useEffect(() => {
+  //   console.log(sharedData.nodeInformation.activeNodes.getter);
+  // }, [sharedData.nodeInformation.activeNodes]);
+
   return (
     <div className={styles.page}>
       <div className={styles.container} style={{ display: "flex", height: "100vh" }}>

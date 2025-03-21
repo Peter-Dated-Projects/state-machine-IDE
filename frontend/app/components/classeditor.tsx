@@ -11,6 +11,7 @@ interface classEditorProps {
 const ClassEditor: React.FC<classEditorProps> = ({ props }) => {
   const handleSave = useCallback(
     (event: KeyboardEvent) => {
+      if (!document.activeElement?.closest(".monaco-editor")) return;
       if ((event.ctrlKey || event.metaKey) && event.key === "s") {
         event.preventDefault();
         props.isSaved.setter(true);
@@ -51,25 +52,6 @@ const ClassEditor: React.FC<classEditorProps> = ({ props }) => {
             window.dispatchEvent(new CustomEvent("requestparsing"));
           }}
         />
-      </div>
-      <div className={styles["nocode-container"]}>
-        <div>
-          <div>
-            <h3>Class Variables</h3>
-          </div>
-          <div className={styles["class-variables-container"]}>
-            {/* a section for class variables */}
-            {/* TODO: make backend call to define classVariables for new node */}
-            {props.classVariables.getter.map((variable, index) => (
-              <div key={index} className={styles["class-variable"]}>
-                <div>
-                  <span>self.{variable.name}</span> ={" "}
-                  <span>{variable.value}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

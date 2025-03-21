@@ -134,7 +134,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
           id: "d",
         },
       ] as LocalNodeObject[];
-      setNodes(defaultValues as AppNode[]);
+      setNodes(defaultValues);
 
       console.log(defaultValues);
 
@@ -142,7 +142,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
       props.nodeInformation.activeNodes.setter(
         new Map(
           defaultValues.map((node) => {
-            return [node.id, node];
+            return [node.id, { ...node }];
           })
         )
       );
@@ -319,24 +319,25 @@ export default function CanvasWindow({ props }: CanvasProps) {
           edges={edges}
           edgeTypes={edgeTypes}
           defaultEdgeOptions={edgeOptions}
+          // deleteKeyCode={null}
           // -------------------------------------------------------------------------- //
           // node events
           onNodesChange={(changes) => {
-            setNodes((nds) => applyNodeChanges(changes, nds));
-
             // console.log(changes);
 
             // update position of local nodes
-            // for (let i = 0; i < changes.length; i++) {
-            //   const change = changes[i];
+            for (let i = 0; i < changes.length; i++) {
+              const change = changes[i];
 
-            //   if (change.type == "position") {
-            //     const node = props.nodeInformation.activeNodes.getter.get(change.id);
-            //     if (change.position != undefined && node != undefined) {
-            //       node.position = change.position;
-            //     }
-            //   }
-            // }
+              if (change.type == "position") {
+                const node = props.nodeInformation.activeNodes.getter.get(change.id);
+                if (change.position != undefined && node != undefined) {
+                  node.position = change.position;
+                }
+              }
+            }
+
+            setNodes((nds) => applyNodeChanges(changes, nds));
           }}
           onNodeClick={(event, node) => {
             // this is a node click event
@@ -347,10 +348,21 @@ export default function CanvasWindow({ props }: CanvasProps) {
             // console.log("mouse enter", node);
             props.nodeInformation.hoveringNode.setter(node.id);
           }}
+          onNodeDoubleClick={(event, node) => {
+            console.log("blah");
+            console.log(event, node);
+
+            // TODO - store them in a buffer or something
+          }}
+          onDelete={({ nodes, edges }) => {
+            console.log(nodes, edges);
+          }}
           onPaneClick={() => {
             // this is a pane click event
             props.nodeInformation.selectedNode.setter(undefined);
             props.edgeInformation.selectedEdge.setter(undefined);
+
+            // remove any document event handler if existing
           }}
           // -------------------------------------------------------------------------- //
           // edge events
