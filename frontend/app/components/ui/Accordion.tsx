@@ -20,12 +20,13 @@ interface AccordionContentProps {
   className?: string;
 }
 
-const AccordionItem: React.FC<AccordionItemProps> = ({
-  title,
-  content,
-  value,
-}) => (
-  <Accordion.Item className={styles["AccordionItem"]} value={value}>
+const AccordionItem: React.FC<AccordionItemProps> = ({ title, content, value }) => (
+  <Accordion.Item
+    className={`${title == "State Template Code" ? styles["AccordionLockedItem"] : ""} ${
+      styles["AccordionItem"]
+    } `}
+    value={value}
+  >
     <AccordionTrigger>{title}</AccordionTrigger>
     <AccordionContent>{content}</AccordionContent>
   </Accordion.Item>
@@ -34,11 +35,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
 const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
   ({ children, ...props }, forwardedRef) => (
     <Accordion.Header className={styles["AccordionHeader"]}>
-      <Accordion.Trigger
-        className={styles["AccordionTrigger"]}
-        {...props}
-        ref={forwardedRef}
-      >
+      <Accordion.Trigger className={styles["AccordionTrigger"]} {...props} ref={forwardedRef}>
         {children}
         <ChevronDownIcon className={styles["AccordionChevron"]} aria-hidden />
       </Accordion.Trigger>
@@ -49,11 +46,7 @@ AccordionTrigger.displayName = "AccordionTrigger";
 
 const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
   ({ children, ...props }, forwardedRef) => (
-    <Accordion.Content
-      className={styles["AccordionContent"]}
-      {...props}
-      ref={forwardedRef}
-    >
+    <Accordion.Content className={styles["AccordionContent"]} {...props} ref={forwardedRef}>
       <div className={styles["AccordionContextText"]}>{children}</div>
     </Accordion.Content>
   )

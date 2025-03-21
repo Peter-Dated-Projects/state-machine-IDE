@@ -187,13 +187,16 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
             className={styles["AccordionRoot"]}
             type="single"
             collapsible
-            defaultValue="baseClass"
+            defaultValue="baseState"
           >
+            {/* base class object */}
             <AccordionItem
-              title={"Base Class"}
-              content={<ClassEditor key={"Base Class"} props={baseClassInfo} />}
-              value={"baseClass"}
+              title={"State Template Code"}
+              content={<ClassEditor key={"BaseState"} props={baseClassInfo} />}
+              value={"baseState"}
             />
+
+            {/* load all other accordian objects */}
             {Array.from(props.nodeInformation.activeNodes.getter.values()).map((node) => {
               const nodeClassInfo = {
                 ...baseClassInfo,
@@ -203,6 +206,7 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
                 },
                 nodeId: node.id,
               };
+
               return (
                 <AccordionItem
                   key={node.id}

@@ -78,6 +78,17 @@ h3 {
   transform: rotate(180deg);
 }
 
+.AccordionLockedItem .AccordionTrigger {
+  /* example properties */
+  background-color: var(--mauve-1);
+  border: 1px solid white;
+  border-radius: 5px;
+}
+
+.AccordionLockedItem .AccordionTrigger:hover {
+  background-color: var(--mauve-3);
+}
+
 @keyframes slideDown {
   from {
     height: 0;
