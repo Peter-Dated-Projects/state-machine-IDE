@@ -10,7 +10,12 @@ export interface LocalNodeObject {
   type: keyof typeof nodeTypes;
   position: { x: number; y: number };
   area: { width: number; height: number };
-  data: { props: SharedProgramData; label: string; connections: string[]; classCode: string };
+  data: {
+    props: SharedProgramData;
+    label: string;
+    connections: string[];
+    classCode: string;
+  };
 }
 
 interface localNodeGeneratorProps {
@@ -18,7 +23,7 @@ interface localNodeGeneratorProps {
   type?: string;
   position?: { x: number; y: number };
   area?: { width: number; height: number };
-  data?: { label: string; classCode: string };
+  data?: { label: string; classCode: string; connections: string[] };
   props: SharedProgramData;
 }
 

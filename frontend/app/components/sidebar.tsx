@@ -9,6 +9,8 @@ import { Select } from "@radix-ui/themes";
 import * as Dialog from "@radix-ui/react-dialog";
 import ClassEditor from "./classeditor";
 import { DEFAULT_CLASS_TEXT } from "./tabinformation";
+import { EdgeProps } from "@xyflow/react";
+import { ArrowRightIcon } from "@radix-ui/react-icons";
 
 interface SideBarProps {
   props: SharedProgramData;
@@ -50,6 +52,10 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     initialMap.set("baseClass", DEFAULT_CLASS_TEXT);
     return initialMap;
   });
+  const [edgeMap, setEdgeMap] = useState<Map<string, EdgeProps>>(() => {
+    const initialMap = new Map();
+    return initialMap;
+  });
   const [classLanguage, setClassLanguage] = useState("python");
   const [classVariables, setClassVariables] = useState<BackendQueryVariable[]>(
     []
@@ -60,15 +66,12 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   const [mounted, setMounted] = useState(false);
   const [openAccordion, setOpenAccordion] = useState("baseClass");
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   // Component Functions
   const generateCode = () => {
     setIsModalOpen(true);
   };
 
+  // Call backend to generate full code with local deepseek
   const handleConfirmGenerate = () => {
     console.log("sending generate request");
     window.dispatchEvent(new CustomEvent("generatecode"));
@@ -77,6 +80,12 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
 
   // create nodedata effect manager
   useEffect(() => {
+    // update edges map every time active edges change
+    props.edges.getter.forEach((edge) => {
+      setEdgeMap(new Map(edgeMap.set(edge.id, edge as EdgeProps)));
+    });
+
+    // get the selected node
     const nodeInfo = props.nodeInformation.selectedNode.getter
       ? props.nodeInformation.activeNodes.getter.get(
           props.nodeInformation.selectedNode.getter || ""
@@ -91,9 +100,11 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     } else {
       setNodeData(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     props.nodeInformation.activeNodes.getter,
     props.nodeInformation.selectedNode.getter,
+    props.edgeInformation.activeEdges.getter,
   ]);
 
   // Get the code for a given node
@@ -166,6 +177,10 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     setReadyToParse(false);
   }, [readyToParse, nodeData, classLanguage, nodeCodeMap, getNodeCode]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (!mounted) {
     return null;
   }
@@ -222,12 +237,8 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
             className={styles["AccordionRoot"]}
             type="single"
             collapsible
-<<<<<<< HEAD
             value={openAccordion}
             onValueChange={setOpenAccordion}
-=======
-            defaultValue="baseState"
->>>>>>> b6c21dc98c7cd8042f671632f0d34813711fda37
           >
             {/* base class object */}
             <AccordionItem
@@ -248,7 +259,7 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
                 return (
                   <AccordionItem
                     key={node.id}
-                    title={`${node.name}`}
+                    title={`${node.data.label}`}
                     content={
                       <div>
                         <ClassEditor
@@ -257,6 +268,39 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
                         />
                         <div className={styles["connections-container"]}>
                           <h3>Connected Classes</h3>
+                          {node.data.connections.map((connection) => {
+                            const edge = edgeMap.get(connection);
+                            const sourceNode = props.nodes.getter.find(
+                              (node) => node.id === edge?.source
+                            );
+                            const targetNode = props.nodes.getter.find(
+                              (node) => node.id === edge?.target
+                            );
+                            return (
+                              <div
+                                key={connection}
+                                className={styles["connection"]}
+                              >
+                                <button
+                                  onClick={() => {
+                                    setOpenAccordion(sourceNode?.id || "");
+                                  }}
+                                  className={styles["connection-button"]}
+                                >
+                                  {sourceNode?.data.label}
+                                </button>
+                                <ArrowRightIcon />
+                                <button
+                                  onClick={() => {
+                                    setOpenAccordion(targetNode?.id || "");
+                                  }}
+                                  className={styles["connection-button"]}
+                                >
+                                  {targetNode?.data.label}
+                                </button>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     }
