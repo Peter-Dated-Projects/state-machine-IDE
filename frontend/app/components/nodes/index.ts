@@ -21,6 +21,7 @@ interface localNodeGeneratorProps {
   data?: { label: string; classCode: string };
   props: SharedProgramData;
 }
+
 export function generateLocalNodeObject({
   name,
   type,
