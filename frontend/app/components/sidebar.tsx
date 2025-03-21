@@ -222,13 +222,18 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
             className={styles["AccordionRoot"]}
             type="single"
             collapsible
+<<<<<<< HEAD
             value={openAccordion}
             onValueChange={setOpenAccordion}
+=======
+            defaultValue="baseState"
+>>>>>>> b6c21dc98c7cd8042f671632f0d34813711fda37
           >
+            {/* base class object */}
             <AccordionItem
-              title={"Base Class"}
-              content={<ClassEditor key={"Base Class"} props={baseClassInfo} />}
-              value={"baseClass"}
+              title={"State Template Code"}
+              content={<ClassEditor key={"BaseState"} props={baseClassInfo} />}
+              value={"baseState"}
             />
             {Array.from(props.nodeInformation.activeNodes.getter.values()).map(
               (node) => {

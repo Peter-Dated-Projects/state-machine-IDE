@@ -257,7 +257,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
         classCode: "",
       },
       props: props,
-    }) as AppNode;
+    });
 
     console.log(newNode);
 
@@ -274,12 +274,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
     //       }
 
     const mapTemp = props.nodeInformation.activeNodes.getter;
-    mapTemp.set(newNode.id, {
-      id: newNode.id,
-      name: newNode.data.label,
-      type: "base",
-      position: newNode.position,
-    } as LocalNodeObject);
+    mapTemp.set(newNode.id, newNode);
     props.nodeInformation.activeNodes.setter(mapTemp);
 
     console.log(props.nodeInformation.activeNodes.getter);
