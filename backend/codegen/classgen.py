@@ -1,17 +1,13 @@
 import re
 import ast
 import dataclasses
-import typing
 
-from ollama import chat
-from ollama import ChatResponse
-from typing import List, Tuple, Any
+from typing import List
 
 # --------------------------------------------------- #
 # constants
 # --------------------------------------------------- #
 
-MODEL = "deepseek-r1:1.5B"
 PARENT_CLASS_SIGNAL_LINE = "__!!__parent_class_super__!!__"
 
 # --------------------------------------------------- #
@@ -147,11 +143,6 @@ class BasicClassSkeleton:
 
     def set_parent_class(self, parent_class: str):
         self._parent_class = parent_class
-
-
-# --------------------------------------------------- #
-# parsing
-# --------------------------------------------------- #
 
 # --------------------------------------------------- #
 # CodeParser implementation

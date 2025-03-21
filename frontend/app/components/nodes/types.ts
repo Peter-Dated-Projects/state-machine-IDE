@@ -7,6 +7,7 @@ export type BaseNodeType = Node<
     label: string;
     classCode: string;
     connections: string[];
+    color?: string;
   },
   "base"
 >;

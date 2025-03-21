@@ -11,6 +11,7 @@ import ClassEditor from "./classeditor";
 import { DEFAULT_CLASS_TEXT } from "./tabinformation";
 import { EdgeProps } from "@xyflow/react";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
+import { NODE_NAME_CHANGE_EVENT } from "../globals";
 
 interface SideBarProps {
   props: SharedProgramData;
@@ -77,6 +78,39 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     window.dispatchEvent(new CustomEvent("generatecode"));
     setIsModalOpen(false);
   };
+
+  // ------------------------------------- //
+  // create a custom event handler for node name changes
+  useEffect(() => {
+    const nodeNameChangeEventHandler = (
+      event: CustomEvent<{ nodeid: string; value: string }>
+    ) => {
+      // change name of node in activenodes
+      const eNode = props.nodeInformation.activeNodes.getter.get(
+        event.detail.nodeid
+      );
+      if (eNode) {
+        eNode.data.label = event.detail.value;
+        eNode.name = event.detail.value;
+
+        props.nodeInformation.activeNodes.getter.set(eNode.id, { ...eNode });
+
+        console.log("Changed", eNode.name);
+      }
+    };
+
+    window.addEventListener(
+      NODE_NAME_CHANGE_EVENT,
+      nodeNameChangeEventHandler as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        NODE_NAME_CHANGE_EVENT,
+        nodeNameChangeEventHandler as EventListener
+      );
+    };
+  }, [props.nodeInformation.activeNodes]);
 
   // create nodedata effect manager
   useEffect(() => {

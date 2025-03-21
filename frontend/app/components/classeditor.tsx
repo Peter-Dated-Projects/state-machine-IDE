@@ -11,6 +11,7 @@ interface classEditorProps {
 const ClassEditor: React.FC<classEditorProps> = ({ props }) => {
   const handleSave = useCallback(
     (event: KeyboardEvent) => {
+      if (!document.activeElement?.closest(".monaco-editor")) return;
       if ((event.ctrlKey || event.metaKey) && event.key === "s") {
         event.preventDefault();
         props.isSaved.setter(true);

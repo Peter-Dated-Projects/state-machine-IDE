@@ -1,0 +1,41 @@
+.contextMenu {
+  background-color: var(--background);
+  border: 1px solid var(--mauve-7);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 2px 10px var(--black-a4);
+  min-width: 200px;
+}
+
+.header {
+  color: var(--foreground);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+}
+
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 4px;
+}
+
+.colorButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.colorButton:hover {
+  transform: scale(1.1);
+  border-color: var(--mint-8);
+}
+
+.colorButton:active {
+  transform: scale(0.95);
+}

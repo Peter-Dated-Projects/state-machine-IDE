@@ -3,6 +3,11 @@ import { type BaseNodeType } from "./types";
 import { generateLocalHandleObject } from "../edges/handle";
 import styles from "./styles/basenode.module.css";
 
+import { useState } from "react";
+
+import { NODE_NAME_CHANGE_EVENT } from "@/app/globals";
+import { NodeContextMenu } from "./contextmenu";
+
 // more node information:
 // https://reactflow.dev/api-reference/types/node
 
@@ -54,12 +59,41 @@ export function BaseNode({
     generateLocalHandleObject({ position: Position.Right, type: "target" }),
   ];
 
+  const [labelValue, setLabelValue] = useState<string>(data.label);
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const handleContextMenu = (event: React.MouseEvent) => {
+    event.preventDefault();
+    setContextMenu({ x: event.clientX, y: event.clientY });
+  };
+
+  const handleColorSelect = (color: string) => {
+    // Update the node's color in the active nodes map
+    const node = data.props.nodeInformation.activeNodes.getter.get(id);
+    if (node) {
+      node.data.color = color;
+      data.props.nodeInformation.activeNodes.getter.set(id, { ...node });
+    }
+  };
+
   return (
     // We add this class to use the same styles as React Flow's default nodes.
     <div style={{ margin: "0px" }}>
       <div
-        className={`react-flow__node-default ${selected ? styles.selected : ""}`}
-        style={{ padding: 2, zIndex: `${zIndex}` }}
+        className={`react-flow__node-default ${
+          selected ? styles.selected : ""
+        }`}
+        style={{
+          padding: 2,
+          zIndex: `${zIndex}`,
+          backgroundColor: data.color || "var(--background)",
+          borderColor: data.color || "var(--mauve-7)",
+        }}
+        onClick={handleContextMenu}
+        onContextMenu={handleContextMenu}
       >
         <div className={styles.container}>
           <div>
@@ -70,7 +104,27 @@ export function BaseNode({
         </div>
         <div className={styles["content-container"]}>
           <div style={{ visibility: "hidden", position: "absolute" }}>{id}</div>
-          {data.label && <div>{data.label}</div>}
+          <div>
+            <input
+              value={labelValue}
+              onChange={(e) => {
+                // check if value is null now
+                if (e.target.value == "" || e.target.value == null) {
+                  setLabelValue("");
+                } else {
+                  setLabelValue(e.target.value);
+                }
+
+                const newEvent = new CustomEvent(NODE_NAME_CHANGE_EVENT, {
+                  detail: { nodeid: id, value: e.target.value },
+                  bubbles: true,
+                  cancelable: true,
+                });
+                document.dispatchEvent(newEvent);
+              }}
+              onClick={(e) => e.stopPropagation()}
+            ></input>
+          </div>
         </div>
         <div style={{ height: "10px" }}></div>
       </div>
@@ -99,7 +153,9 @@ export function BaseNode({
       <div
         style={{
           visibility:
-            data.props.edgeInformation.creatingNewEdge.getter != undefined ? "visible" : "hidden",
+            data.props.edgeInformation.creatingNewEdge.getter != undefined
+              ? "visible"
+              : "hidden",
         }}
       >
         {targetHandles.map((handle) => {
@@ -109,11 +165,22 @@ export function BaseNode({
               position={handle.position}
               type={handle.type}
               id={handle.id}
-              isConnectable={data.props.edgeInformation.creatingNewEdge.getter != id}
+              isConnectable={
+                data.props.edgeInformation.creatingNewEdge.getter != id
+              }
             />
           );
         })}
       </div>
+
+      {contextMenu && (
+        <NodeContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+          onColorSelect={handleColorSelect}
+        />
+      )}
     </div>
   );
 }
