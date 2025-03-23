@@ -13,11 +13,7 @@ import {
   applyEdgeChanges,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import {
-  CardStackPlusIcon,
-  CheckIcon,
-  DownloadIcon,
-} from "@radix-ui/react-icons";
+import { CardStackPlusIcon, CheckIcon, DownloadIcon } from "@radix-ui/react-icons";
 import { Tooltip } from "@radix-ui/themes";
 import styles from "./styles/canvas.module.css";
 import { nodeTypes, LocalNodeObject, generateLocalNodeObject } from "./nodes";
@@ -57,9 +53,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
       for (let i = 0; i < deletedNodes.length; i++) {
         console.log(deletedNodes[i]);
         // update local node storage
-        setNodes((nodes) =>
-          nodes.filter((node) => node.id !== deletedNodes[i].id)
-        );
+        setNodes((nodes) => nodes.filter((node) => node.id !== deletedNodes[i].id));
 
         // check if current node
         if (props.nodeInformation.selectedNode.getter === deletedNodes[i].id) {
@@ -71,11 +65,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
       }
       props.nodeInformation.activeNodes.setter(mapTemp);
     },
-    [
-      setNodes,
-      props.nodeInformation.activeNodes,
-      props.nodeInformation.selectedNode,
-    ]
+    [setNodes, props.nodeInformation.activeNodes, props.nodeInformation.selectedNode]
   );
 
   const onEdgeDelete = useCallback(
@@ -84,9 +74,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
 
       for (let i = 0; i < edgesToDelete.length; i++) {
         // update local edge storage
-        setEdges((edges) =>
-          edges.filter((edge) => edge.id !== edgesToDelete[i].id)
-        );
+        setEdges((edges) => edges.filter((edge) => edge.id !== edgesToDelete[i].id));
 
         // check if current edge
         if (props.edgeInformation.selectedEdge.getter === edgesToDelete[i].id) {
@@ -99,11 +87,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
 
       props.edgeInformation.activeEdges.setter(mapTemp);
     },
-    [
-      setEdges,
-      props.edgeInformation.activeEdges,
-      props.edgeInformation.selectedEdge,
-    ]
+    [setEdges, props.edgeInformation.activeEdges, props.edgeInformation.selectedEdge]
   );
 
   // ------------------------------------- //
@@ -258,8 +242,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
       edges: edges,
     };
     const dataStr =
-      "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(flow, null, 2));
+      "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(flow, null, 2));
     const downloadAnchorNode = document.createElement("a");
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", "flow.json");
@@ -377,9 +360,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
               const change = changes[i];
 
               if (change.type == "position") {
-                const node = props.nodeInformation.activeNodes.getter.get(
-                  change.id
-                );
+                const node = props.nodeInformation.activeNodes.getter.get(change.id);
                 if (change.position != undefined && node != undefined) {
                   node.position = change.position;
                 }
@@ -431,12 +412,8 @@ export default function CanvasWindow({ props }: CanvasProps) {
             const edgeId = crypto.randomUUID();
 
             // Retrieve the source and target node objects
-            const sourceNode = nodes.find(
-              (node) => node.id === connection.source
-            );
-            const targetNode = nodes.find(
-              (node) => node.id === connection.target
-            );
+            const sourceNode = nodes.find((node) => node.id === connection.source);
+            const targetNode = nodes.find((node) => node.id === connection.target);
 
             // Compute a flow direction based on node positions.
             // This is a simple rule: if the source's x is less than the target's x,
@@ -444,10 +421,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
             // Otherwise, use "reverse".
             let flowDirection = "normal";
             if (sourceNode && targetNode) {
-              flowDirection =
-                sourceNode.position.x < targetNode.position.x
-                  ? "normal"
-                  : "reverse";
+              flowDirection = sourceNode.position.x < targetNode.position.x ? "normal" : "reverse";
 
               console.log(sourceNode, targetNode);
 
@@ -481,9 +455,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
           }}
           onConnectStart={() => {
             props.edgeInformation.selectedEdge.setter(undefined);
-            props.edgeInformation.creatingNewEdge.setter(
-              props.nodeInformation.selectedNode.getter
-            );
+            props.edgeInformation.creatingNewEdge.setter(props.nodeInformation.selectedNode.getter);
             console.log("connect start");
           }}
           onConnectEnd={() => {
@@ -501,10 +473,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
           <div className={styles["add-components-container"]}>
             {controlButtons.map((button, index) => (
               <Tooltip key={index} content={button.tooltip}>
-                <button
-                  className={styles["control-btn"]}
-                  onClick={button.onClick}
-                >
+                <button className={styles["control-btn"]} onClick={button.onClick}>
                   {button.icon}
                 </button>
               </Tooltip>
