@@ -116,8 +116,14 @@ export default function CanvasWindow({ props }: CanvasProps) {
         {
           ...generateLocalNodeObject({
             name: "state",
+            type: "base",
             position: { x: 0, y: 0 },
-            data: { label: "state", classCode: "", connections: [] },
+            data: {
+              label: "state",
+              classCode: "",
+              connections: [],
+              color: "",
+            },
             props: props,
           }),
           id: "a",
@@ -125,8 +131,14 @@ export default function CanvasWindow({ props }: CanvasProps) {
         {
           ...generateLocalNodeObject({
             name: "next-state",
+            type: "base",
             position: { x: -100, y: 100 },
-            data: { label: "state 2", classCode: "", connections: [] },
+            data: {
+              label: "state 2",
+              classCode: "",
+              connections: [],
+              color: "",
+            },
             props: props,
           }),
           id: "b",
@@ -134,8 +146,14 @@ export default function CanvasWindow({ props }: CanvasProps) {
         {
           ...generateLocalNodeObject({
             name: "state 3",
+            type: "base",
             position: { x: 100, y: 100 },
-            data: { label: "state 3", classCode: "", connections: [] },
+            data: {
+              label: "state 3",
+              classCode: "",
+              connections: [],
+              color: "",
+            },
             props: props,
           }),
           id: "c",
@@ -143,8 +161,14 @@ export default function CanvasWindow({ props }: CanvasProps) {
         {
           ...generateLocalNodeObject({
             name: "next state",
+            type: "base",
             position: { x: 0, y: 200 },
-            data: { label: "state 4", classCode: "", connections: [] },
+            data: {
+              label: "state 4",
+              classCode: "",
+              connections: [],
+              color: "",
+            },
             props: props,
           }),
           id: "d",
@@ -302,6 +326,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
         label: `new node ${props.nodeInformation.activeNodes.getter.size + 1}`,
         classCode: "",
         connections: [],
+        color: "",
       },
       props: props,
     });

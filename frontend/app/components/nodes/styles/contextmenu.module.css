@@ -1,31 +1,30 @@
 .contextMenu {
-  background-color: var(--background);
+  background: linear-gradient(to top, #000000, #333333);
   border: 1px solid var(--mauve-7);
   border-radius: 8px;
   padding: 8px;
   box-shadow: 0 2px 10px var(--black-a4);
-  min-width: 200px;
+  min-width: 100px;
 }
 
 .header {
   color: var(--foreground);
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 8px;
-  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px;
 }
 
 .colorGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
   padding: 4px;
 }
 
 .colorButton {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 15px;
+  height: 15px;
+  border-radius: 100%;
   border: 2px solid transparent;
   cursor: pointer;
   transition: all 0.2s ease;
