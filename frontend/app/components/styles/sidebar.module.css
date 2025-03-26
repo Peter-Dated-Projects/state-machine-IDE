@@ -223,3 +223,9 @@
     transform: translate(-50%, -50%) scale(1);
   }
 }
+
+.generate-btn-container {
+  display: grid;
+  grid-template-columns: 5fr 1fr;
+  gap: 10px;
+}

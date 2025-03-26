@@ -57,13 +57,16 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   const [classLanguage, setClassLanguage] = useState("python");
   const [classVariables, setClassVariables] = useState<BackendQueryVariable[]>([]);
   const [readyToParse, setReadyToParse] = useState(false);
-  const [nodeData, setNodeData] = useState<NodeData | null>(null);
 
+  const [nodeData, setNodeData] = useState<NodeData | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openAccordion, setOpenAccordion] = useState("baseClass");
 
   const userPromptRef = React.createRef<HTMLTextAreaElement>();
+  const [llmModel, setLlmModel] = useState("ollama||deepseek-coder-v2:16b");
+
+  const llmModelChoices = ["ollama||deepseek-coder-v2:16b", "google||gemini"];
 
   // Component Functions
   const generateCode = () => {
@@ -98,7 +101,7 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
         userPrompt: userPrompt,
         language: classLanguage,
         // model: "ollama", // can also be gemini!
-        model: "gemini",
+        model: llmModel,
       },
     });
 
@@ -113,7 +116,18 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(event.detail),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        // check response of backend
+        if (res.status != 200) {
+          console.log(
+            "Error in generating code. Create an API key from google genai and do the following\n1. Create a .env file in backend folder\n2. GENAI_API_KEY={insert api key}"
+          );
+          console.log(res);
+          return;
+        }
+
+        return res.json();
+      })
       .then((data) => {
         console.log(data);
 
@@ -360,9 +374,23 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
           </Accordion.Root>
         </div>
       </section>
-      <button className={styles["generate-btn"]} onClick={generateCode}>
-        Save & Generate
-      </button>
+      <div className={styles["generate-btn-container"]}>
+        <button className={styles["generate-btn"]} onClick={generateCode}>
+          Save & Generate
+        </button>
+        <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
+          <Select.Root value={llmModel} onValueChange={(value) => setLlmModel(value)}>
+            <Select.Trigger style={{ cursor: "pointer" }} />
+            <Select.Content position="popper">
+              {llmModelChoices.map((model) => (
+                <Select.Item key={model} value={model} style={{ cursor: "pointer" }}>
+                  {model}
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Root>
+        </div>
+      </div>
 
       <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
         <Dialog.Portal>

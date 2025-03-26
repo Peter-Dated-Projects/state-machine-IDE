@@ -65,7 +65,14 @@ code
 
     print(prompt)
 
-    if model == "gemini":
+    provider, model = model.split("||")
+
+    if provider == "google":
+        # check if API key is valid
+        if not os.getenv("GENAI_API_KEY"):
+            return jsonify({"error": "Missing GENAI_API_KEY environment variable"}), 500
+
+
         # send prompt to gemini
         gemini_client = gemini.Gemini()
         response = gemini_client.query(query=prompt, files=[], model=gemini.GEMINI_MODEL)
@@ -77,7 +84,7 @@ code
 
         print(split)
         final_result = "\n".join(split)
-    elif model == "ollama":
+    elif provider == "ollama":
         # send prompt to ollama
         response = ollama.chat(
             model="deepseek-coder-v2:16b",
@@ -92,7 +99,6 @@ code
     
     print(final_result)
 
-    
 
     return jsonify({"response": final_result}), 200
 
