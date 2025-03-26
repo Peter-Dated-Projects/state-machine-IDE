@@ -34,7 +34,7 @@ const ClassEditor: React.FC<classEditorProps> = ({ props }) => {
   // return object
   return (
     <div className={styles.container}>
-      <div className={styles["code-editor-container"]}>
+      <div className={styles["code-editor-container"]} style={{ position: "relative" }}>
         <Editor
           height="40vh"
           width={props.editorWidth.getter}

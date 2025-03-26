@@ -63,15 +63,66 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openAccordion, setOpenAccordion] = useState("baseClass");
 
+  const userPromptRef = React.createRef<HTMLTextAreaElement>();
+
   // Component Functions
   const generateCode = () => {
+    if (!openAccordion) {
+      console.log("No node data found");
+      return;
+    }
     setIsModalOpen(true);
   };
 
   // Call backend to generate full code with local deepseek
   const handleConfirmGenerate = () => {
-    console.log("sending generate request");
-    window.dispatchEvent(new CustomEvent("generatecode"));
+    if (!userPromptRef.current) {
+      console.log("User Prompt window not found");
+      return;
+    }
+    if (!openAccordion) {
+      console.log("No node data found");
+      return;
+    }
+
+    console.log(openAccordion);
+
+    console.log("building request packet for ai generation");
+    const userPrompt = userPromptRef.current.value;
+
+    // only generates code for current state given user prompt
+    const event = new CustomEvent("generatecode", {
+      detail: {
+        currentNodeName: props.nodeInformation.activeNodes.getter.get(openAccordion)?.data.label,
+        currentNodeCode: nodeCodeMap.get(openAccordion) || "",
+        userPrompt: userPrompt,
+        language: classLanguage,
+        // model: "ollama", // can also be gemini!
+        model: "gemini",
+      },
+    });
+
+    window.dispatchEvent(event);
+    console.log(event);
+
+    // ------------------------------------- //
+    // send query to backend + await response
+
+    fetch(`${BACKEND_IP}/api/code-generator`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(event.detail),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+
+        // change value inside of editor
+        const modifiedResponse = data.response;
+        setNodeCode(openAccordion, modifiedResponse);
+      })
+      .catch(console.error);
+
     setIsModalOpen(false);
   };
 
@@ -319,9 +370,19 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
           <Dialog.Content className={styles["modal-content"]}>
             <Dialog.Title className={styles["modal-title"]}>Generate Code</Dialog.Title>
             <Dialog.Description className={styles["modal-description"]}>
-              Are you sure you want to generate code for the current state machine? This will create
-              implementation files based on your current setup.
+              Enter a description for the usage, purpose, and functionality of this state.
             </Dialog.Description>
+            {/* prompt input */}
+            <div style={{ marginBottom: "1rem" }}>
+              <textarea
+                ref={userPromptRef}
+                placeholder="Enter your prompt here"
+                style={{ width: "100%", padding: "8px", fontSize: "16px", resize: "vertical" }}
+                rows={4}
+              />
+            </div>
+
+            {/* buttons */}
             <div className={styles["modal-actions"]}>
               <button
                 className={`${styles["modal-button"]} ${styles["modal-button-secondary"]}`}
