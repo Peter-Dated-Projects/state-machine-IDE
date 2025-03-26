@@ -11,6 +11,7 @@ export interface LocalEdgeObject {
   sourceHandle?: string;
   targetHandle?: string;
 
+  data: { animationDirection: string };
   animated: boolean;
 }
 
@@ -21,6 +22,7 @@ interface LocalEdgeGeneratorProps {
   sourceHandle?: string;
   targetHandle?: string;
 
+  data?: { animationDirection: string };
   animated?: boolean;
 }
 
@@ -30,6 +32,7 @@ export function generateLocalEdgeObject({
   target,
   sourceHandle,
   targetHandle,
+  data,
   animated,
 }: LocalEdgeGeneratorProps = {}): LocalEdgeObject {
   return {
@@ -38,6 +41,7 @@ export function generateLocalEdgeObject({
     target: target ?? "defaultTarget",
     sourceHandle: sourceHandle, //?? `handle_${Position.Top}_source`,
     targetHandle: targetHandle, //?? `handle_${Position.Bottom}_target`,
+    data: data ?? { animationDirection: "none" },
     animated: animated ?? false,
   };
 }
