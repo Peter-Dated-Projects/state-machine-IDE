@@ -53,18 +53,14 @@ export function BaseNode({
     const nodeElement = event.currentTarget as HTMLElement;
     const rect = nodeElement.getBoundingClientRect();
     setContextMenu({
-      x: rect.left - 800,
-      y: rect.top - 550, // Position 100px above the node
+      x: rect.left - 900,
+      y: rect.top - 600, // Position 100px above the node
     });
   };
 
   const handleColorSelect = (color: string) => {
     // Update the node's color in the active nodes map
-    const node = data.props.nodeInformation.activeNodes.getter.get(id);
-    if (node) {
-      node.data.color = color;
-      data.props.nodeInformation.activeNodes.getter.set(id, { ...node });
-    }
+    data.color = color;
   };
 
   const handleDeleteNode = () => {
@@ -181,7 +177,18 @@ export function BaseNode({
           x={contextMenu.x}
           y={contextMenu.y}
           node={
-            data.props.nodeInformation.activeNodes.getter.get(id) as AppNode
+            {
+              id,
+              type: "base",
+              position: { x: positionAbsoluteX, y: positionAbsoluteY },
+              data: {
+                label: data.label,
+                classCode: data.classCode,
+                connections: data.connections,
+                color: data.color,
+                props: data.props,
+              },
+            } as AppNode
           }
           onClose={() => setContextMenu(null)}
           onColorSelect={handleColorSelect}

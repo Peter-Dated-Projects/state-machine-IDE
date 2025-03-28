@@ -356,73 +356,71 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
               content={<ClassEditor key={"BaseState"} props={baseClassInfo} />}
               value={"baseState"}
             />
-            {Array.from(props.nodeInformation.activeNodes.getter.values()).map(
-              (node) => {
-                const nodeClassInfo = {
-                  ...baseClassInfo,
-                  classCode: {
-                    getter: getNodeCode(node.id),
-                    setter: (code: string) => setNodeCode(node.id, code),
-                  },
-                  nodeId: node.id,
-                };
-                return (
-                  <AccordionItem
-                    key={node.id}
-                    title={`${node.data.label}`}
-                    content={
-                      <div>
-                        <ClassEditor
-                          key={`${node.id}-classtab`}
-                          props={nodeClassInfo}
-                        />
-                        <div className={styles["connections-container"]}>
-                          <h3>Connected Classes</h3>
-                          {node.data.connections.map((connection) => {
-                            const edge = edgeMap.get(connection);
-                            const sourceNode = props.nodes.getter.find(
-                              (node) => node.id === edge?.source
-                            );
-                            const targetNode = props.nodes.getter.find(
-                              (node) => node.id === edge?.target
-                            );
-                            return (
-                              <div
-                                key={connection}
-                                className={styles["connection"]}
+            {Array.from(props.nodes.getter).map((node) => {
+              const nodeClassInfo = {
+                ...baseClassInfo,
+                classCode: {
+                  getter: getNodeCode(node.id),
+                  setter: (code: string) => setNodeCode(node.id, code),
+                },
+                nodeId: node.id,
+              };
+              return (
+                <AccordionItem
+                  key={node.id}
+                  title={`${node.data.label}`}
+                  content={
+                    <div>
+                      <ClassEditor
+                        key={`${node.id}-classtab`}
+                        props={nodeClassInfo}
+                      />
+                      <div className={styles["connections-container"]}>
+                        <h3>Connected Classes</h3>
+                        {node.data.connections.map((connection) => {
+                          const edge = edgeMap.get(connection);
+                          const sourceNode = props.nodes.getter.find(
+                            (node) => node.id === edge?.source
+                          );
+                          const targetNode = props.nodes.getter.find(
+                            (node) => node.id === edge?.target
+                          );
+                          return (
+                            <div
+                              key={connection}
+                              className={styles["connection"]}
+                            >
+                              <button
+                                onClick={() => {
+                                  setOpenAccordion(sourceNode?.id || "");
+                                }}
+                                className={styles["connection-button"]}
                               >
-                                <button
-                                  onClick={() => {
-                                    setOpenAccordion(sourceNode?.id || "");
-                                  }}
-                                  className={styles["connection-button"]}
-                                >
-                                  {sourceNode?.data.label}
-                                </button>
-                                <ArrowRightIcon
-                                  color={
-                                    sourceNode?.id == node.id ? "green" : "red"
-                                  }
-                                />
-                                <button
-                                  onClick={() => {
-                                    setOpenAccordion(targetNode?.id || "");
-                                  }}
-                                  className={styles["connection-button"]}
-                                >
-                                  {targetNode?.data.label}
-                                </button>
-                              </div>
-                            );
-                          })}
-                        </div>
+                                {sourceNode?.data.label}
+                              </button>
+                              <ArrowRightIcon
+                                color={
+                                  sourceNode?.id == node.id ? "green" : "red"
+                                }
+                              />
+                              <button
+                                onClick={() => {
+                                  setOpenAccordion(targetNode?.id || "");
+                                }}
+                                className={styles["connection-button"]}
+                              >
+                                {targetNode?.data.label}
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
-                    }
-                    value={node.id}
-                  />
-                );
-              }
-            )}
+                    </div>
+                  }
+                  value={node.id}
+                />
+              );
+            })}
           </Accordion.Root>
         </div>
       </section>

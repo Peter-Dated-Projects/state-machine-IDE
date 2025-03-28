@@ -144,10 +144,12 @@ export default function CanvasWindow({ props }: CanvasProps) {
               label: "IdleState",
               classCode: "",
               connections: [],
-              color: "",
+              color: undefined,
+            },
+            props: {
+              ...props,
               onNodeDelete: (nodes: AppNode[]) => onNodeDelete(nodes),
             },
-            props: props,
           }),
           id: "a",
         },
@@ -159,10 +161,12 @@ export default function CanvasWindow({ props }: CanvasProps) {
               label: "RunningState",
               classCode: "",
               connections: [],
-              color: "",
+              color: undefined,
+            },
+            props: {
+              ...props,
               onNodeDelete: (nodes: AppNode[]) => onNodeDelete(nodes),
             },
-            props: props,
           }),
           id: "b",
         },
@@ -174,10 +178,12 @@ export default function CanvasWindow({ props }: CanvasProps) {
               label: "WalkingState",
               classCode: "",
               connections: [],
-              color: "",
+              color: undefined,
+            },
+            props: {
+              ...props,
               onNodeDelete: (nodes: AppNode[]) => onNodeDelete(nodes),
             },
-            props: props,
           }),
           id: "c",
         },
@@ -189,10 +195,12 @@ export default function CanvasWindow({ props }: CanvasProps) {
               label: "DeathState",
               classCode: "",
               connections: [],
-              color: "",
+              color: undefined,
+            },
+            props: {
+              ...props,
               onNodeDelete: (nodes: AppNode[]) => onNodeDelete(nodes),
             },
-            props: props,
           }),
           id: "d",
         },
@@ -284,7 +292,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
         )
       );
     }
-  }, [props, setNodes, setEdges, nodes.length]);
+  }, [props, setNodes, setEdges, nodes.length, onNodeDelete]);
 
   // ------------------------------------- //
   // edge + node options
@@ -373,7 +381,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
     props.nodeInformation.activeNodes.setter(mapTemp);
 
     console.log(props.nodeInformation.activeNodes.getter);
-  }, [props, setNodes]);
+  }, [props, setNodes, onNodeDelete]);
 
   const debugItems = useCallback(() => {
     console.log("activeNodes", props.nodeInformation.activeNodes.getter);

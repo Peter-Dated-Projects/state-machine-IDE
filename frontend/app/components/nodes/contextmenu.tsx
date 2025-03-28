@@ -34,23 +34,35 @@ export const NodeContextMenu: React.FC<ContextMenuProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      // Check if the click is on the canvas (react-flow__pane)
+      const isCanvasClick =
+        (event.target as HTMLElement).closest(".react-flow__pane") !== null;
+
+      // If the click is on the canvas or outside the menu, close it
+      if (
+        isCanvasClick ||
+        (menuRef.current && !menuRef.current.contains(event.target as Node))
+      ) {
         onClose();
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    // Add event listener after a small delay to prevent immediate closing
+    const timeoutId = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 0);
+
     return () => {
+      clearTimeout(timeoutId);
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [onClose]);
+  }, [onClose, menuRef]);
 
   return (
     <div
       ref={menuRef}
       className={styles.contextMenu}
       style={{
-        position: "fixed",
         left: x,
         top: y,
         zIndex: 1000,
