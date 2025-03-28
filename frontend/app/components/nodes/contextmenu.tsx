@@ -1,29 +1,30 @@
 import React, { useEffect, useRef } from "react";
 import styles from "./styles/contextmenu.module.css";
+import { AppNode } from "./types";
 
 interface ContextMenuProps {
   x: number;
   y: number;
+  node: AppNode;
   onClose: () => void;
   onColorSelect: (color: string) => void;
 }
 
 const COLORS = [
   "#FF6B6B", // Red
-  "#E67E22", // Orange
-  "#FFEEAD", // Yellow
-  "#96CEB4", // Green
   "#4ECDC4", // Teal
   "#45B7D1", // Blue
-  "#000080", // Navy
+  "#96CEB4", // Green
+  "#FFEEAD", // Yellow
   "#D4A5A5", // Pink
   "#9B59B6", // Purple
-  "#333333", // Gray
+  "#E67E22", // Orange
 ];
 
 export const NodeContextMenu: React.FC<ContextMenuProps> = ({
   x,
   y,
+  node,
   onClose,
   onColorSelect,
 }) => {
@@ -42,23 +43,9 @@ export const NodeContextMenu: React.FC<ContextMenuProps> = ({
     };
   }, [onClose]);
 
-  // Ensure the menu stays within viewport bounds
-  // const menuWidth = 200;
-  // const menuHeight = 150;
-  // const viewportWidth = window.innerWidth;
-  // const viewportHeight = window.innerHeight;
-
-  // // adjust x coords
-  // let adjustedX = x;
-  // if (x + menuWidth > viewportWidth) {
-  //   adjustedX = x - menuWidth;
-  // }
-
-  // // adjust y coords
-  // let adjustedY = y;
-  // if (y + menuHeight > viewportHeight) {
-  //   adjustedY = y - menuHeight;
-  // }
+  function onDelete() {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div
@@ -71,7 +58,18 @@ export const NodeContextMenu: React.FC<ContextMenuProps> = ({
         zIndex: 1000,
       }}
     >
-      <div className={styles.header}>Node Color</div>
+      <div className={styles.headerContainer}>
+        <div className={styles.header}>{node.data.label}</div>
+        <button
+          className={styles.deleteNodeButton}
+          onClick={() => {
+            onDelete();
+            // make delete function off node.data.props.nodeInformation.activeNodes.getter
+          }}
+        >
+          Delete Node
+        </button>
+      </div>
       <div className={styles.colorGrid}>
         {COLORS.map((color) => (
           <button

@@ -1,29 +1,54 @@
 .contextMenu {
-  background: linear-gradient(to top, #000000, #333333);
+  background-color: var(--background);
   border: 1px solid var(--mauve-7);
   border-radius: 8px;
-  padding: 8px;
+  padding: 14px;
+  justify-content: center;
+  align-items: center;
   box-shadow: 0 2px 10px var(--black-a4);
-  min-width: 100px;
+  min-width: 180px;
 }
 
 .header {
   color: var(--foreground);
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.deleteNodeButton {
+  color: var(--red-9);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deleteNodeButton:hover {
+  background-color: var(--gray-5);
+  border-radius: 4px;
+  padding: 0px 6px;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 0px 8px 0px;
+  width: 100%;
 }
 
 .colorGrid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(8, 1fr);
+  width: 100%;
   gap: 8px;
-  padding: 4px;
 }
-
 .colorButton {
-  width: 15px;
-  height: 15px;
+  width: 25px;
+  height: 25px;
   border-radius: 100%;
   border: 2px solid transparent;
   cursor: pointer;

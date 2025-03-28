@@ -118,12 +118,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
             name: "state",
             type: "base",
             position: { x: 0, y: 0 },
-            data: {
-              label: "state",
-              classCode: "",
-              connections: [],
-              color: "",
-            },
+            data: { label: "state", classCode: "", connections: [], color: "" },
             props: props,
           }),
           id: "a",
@@ -260,7 +255,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
         )
       );
     }
-  }, [props, setNodes, setEdges]);
+  }, [props, setNodes, setEdges, nodes.length]);
 
   // ------------------------------------- //
   // edge + node options
@@ -326,7 +321,6 @@ export default function CanvasWindow({ props }: CanvasProps) {
         label: `new node ${props.nodeInformation.activeNodes.getter.size + 1}`,
         classCode: "",
         connections: [],
-        color: "",
       },
       props: props,
     });

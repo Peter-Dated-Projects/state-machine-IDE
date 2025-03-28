@@ -1,11 +1,12 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
-import { type BaseNodeType } from "./types";
+import { AppNode, type BaseNodeType } from "./types";
 import { generateLocalHandleObject } from "../edges/handle";
 import styles from "./styles/basenode.module.css";
+
 import { useState } from "react";
+
 import { NODE_NAME_CHANGE_EVENT } from "@/app/globals";
 import { NodeContextMenu } from "./contextmenu";
-import { LocalNodeObject } from "./index";
 
 // more node information:
 // https://reactflow.dev/api-reference/types/node
@@ -48,62 +49,21 @@ export function BaseNode({
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
-
+    // Position the menu above the node
     const nodeElement = event.currentTarget as HTMLElement;
     const rect = nodeElement.getBoundingClientRect();
     setContextMenu({
-      x: rect.left - 800,
-      y: rect.top - 600,
+      x: rect.left - 700,
+      y: rect.top - 600, // Position 100px above the node
     });
   };
 
   const handleColorSelect = (color: string) => {
-    console.log("Color selected:", color);
-    console.log("Current node data:", data);
-
-    // Try to find the node in activeNodes map
-    let node = data.props.nodeInformation.activeNodes.getter.get(id);
-
-    // If not found, try to find it by matching other properties
-    if (!node) {
-      console.log("Node not found by ID, searching by other properties...");
-      for (const [
-        nodeId,
-        nodeData,
-      ] of data.props.nodeInformation.activeNodes.getter.entries()) {
-        if (
-          nodeData.data.label === data.label &&
-          nodeData.position.x === positionAbsoluteX &&
-          nodeData.position.y === positionAbsoluteY
-        ) {
-          node = nodeData;
-          console.log("Found matching node:", node);
-          break;
-        }
-      }
-    }
-
+    // Update the node's color in the active nodes map
+    const node = data.props.nodeInformation.activeNodes.getter.get(id);
     if (node) {
-      // Update local node data
-      const updatedNode: LocalNodeObject = {
-        ...node,
-        data: {
-          ...node.data,
-          color: color,
-        },
-      };
-      console.log("Updating node with:", updatedNode);
-
-      // Update the map
-      const mapTemp = data.props.nodeInformation.activeNodes.getter;
-      mapTemp.set(node.id, updatedNode); // Use the found node's ID
-      data.props.nodeInformation.activeNodes.setter(mapTemp);
-
-      // Update React Flow node data
-      data.color = color;
-      console.log("Updated React Flow data:", data);
-    } else {
-      console.error("Node not found in activeNodes map:", id);
+      node.data.color = color;
+      data.props.nodeInformation.activeNodes.getter.set(id, { ...node });
     }
   };
 
@@ -119,8 +79,6 @@ export function BaseNode({
           zIndex: `${zIndex}`,
           backgroundColor: data.color || "var(--background)",
           borderColor: data.color || "var(--mauve-7)",
-          borderWidth: "1px",
-          borderStyle: "solid",
         }}
         onContextMenu={handleContextMenu}
       >
@@ -202,11 +160,13 @@ export function BaseNode({
         })}
       </div>
 
-      {/* context menu opens when right clicking on node */}
       {contextMenu && (
         <NodeContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
+          node={
+            data.props.nodeInformation.activeNodes.getter.get(id) as AppNode
+          }
           onClose={() => setContextMenu(null)}
           onColorSelect={handleColorSelect}
         />
