@@ -53,5 +53,6 @@ next-env.d.ts
 .vscode
 /.vscode
 
-
+# venv
 **/.venv
+venv/

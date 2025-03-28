@@ -6,7 +6,6 @@ import { BaseNode } from "./basenode";
 export interface LocalNodeObject {
   // local storage -- not under react flow
   id: string;
-  name: string;
   type: keyof typeof nodeTypes;
   position: { x: number; y: number };
   area: { width: number; height: number };
@@ -20,7 +19,6 @@ export interface LocalNodeObject {
 }
 
 interface localNodeGeneratorProps {
-  name?: string;
   type?: string;
   position?: { x: number; y: number };
   area?: { width: number; height: number };
@@ -34,7 +32,6 @@ interface localNodeGeneratorProps {
 }
 
 export function generateLocalNodeObject({
-  name,
   type,
   position,
   area,
@@ -45,15 +42,11 @@ export function generateLocalNodeObject({
 
   const result = {
     id,
-    name: name ?? "nodeName",
     type: type ?? "base",
     position: position ?? { x: 0, y: 0 },
     area: area ?? { width: 80, height: 40 },
     data: { ...data, props: props, connections: [], classCode: "" },
   };
-  if (result.data.label === undefined) {
-    result.data.label = result.name;
-  }
 
   console.log(result);
   return result as LocalNodeObject;

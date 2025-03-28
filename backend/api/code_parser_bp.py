@@ -4,7 +4,6 @@ import ast
 # Create a Blueprint for the code parser
 code_parser_bp = Blueprint("code_parser", __name__, url_prefix="/api")
 
-
 # --------------------------------------------------- #
 # constants
 # --------------------------------------------------- #

@@ -3,11 +3,10 @@ import styles from "./page.module.css";
 import React, { useState, useCallback } from "react";
 import SideBar from "./components/sidebar";
 import CanvasWindow from "./components/canvas";
-import { Edge, ReactFlowProvider, useEdgesState, useNodesState } from "@xyflow/react";
+import { ReactFlowProvider, useEdgesState, useNodesState } from "@xyflow/react";
 
 import { LocalEdgeObject } from "./components/edges";
 import { LocalNodeObject } from "./components/nodes";
-import { AppNode } from "./components/nodes/types";
 
 // ------------------------------------------ //
 // Interfaces
@@ -26,6 +25,7 @@ export interface GlobalNodeInformation {
   selectedNode: StateManagerProps<string | undefined>;
   hoveringNode: StateManagerProps<string | undefined>;
   activeNodes: StateManagerProps<Map<string, LocalNodeObject>>;
+  activeEditorNode: StateManagerProps<string | undefined>;
 }
 
 export interface GlobalEdgeInformation {
@@ -37,8 +37,8 @@ export interface GlobalEdgeInformation {
 
 export interface SharedProgramData {
   editorWidth: StateManagerProps<number>;
-  nodes: StateManagerProps<AppNode[]>;
-  edges: StateManagerProps<Edge[]>;
+  nodes: StateManagerProps<LocalNodeObject[]>;
+  edges: StateManagerProps<LocalEdgeObject[]>;
   nodeInformation: GlobalNodeInformation;
   edgeInformation: GlobalEdgeInformation;
 }
@@ -74,8 +74,8 @@ export default function Home() {
   );
 
   // Global Nodes & Edges
-  const [nodes, setNodes] = useNodesState([] as AppNode[]);
-  const [edges, setEdges] = useEdgesState([] as Edge[]);
+  const [nodes, setNodes] = useNodesState([] as LocalNodeObject[]);
+  const [edges, setEdges] = useEdgesState([] as LocalEdgeObject[]);
 
   // Shared program state
   const [selectedNodeData, setSelectedNodeData] = useState<string | undefined>(undefined);
@@ -86,6 +86,7 @@ export default function Home() {
   const [hoveringEdgeData, setHoveringEdgeData] = useState<string | undefined>(undefined);
   const [activeEdgesData, setActiveEdgesData] = useState<Map<string, LocalEdgeObject>>(new Map());
   const [creatingNewEdgeData, setCreatingNewEdgeData] = useState<string | undefined>(undefined);
+  const [activeEditorNode, setActiveEditorNode] = useState<string | undefined>(undefined);
 
   const sharedData: SharedProgramData = {
     editorWidth: { getter: editorWidth, setter: setEditorWidth },
@@ -95,6 +96,7 @@ export default function Home() {
       selectedNode: { getter: selectedNodeData, setter: setSelectedNodeData },
       hoveringNode: { getter: hoveringNodeData, setter: setHoveringNodeData },
       activeNodes: { getter: activeNodesData, setter: setActiveNodesData },
+      activeEditorNode: { getter: activeEditorNode, setter: setActiveEditorNode },
     },
     edgeInformation: {
       selectedEdge: { getter: selectedEdgeData, setter: setSelectedEdgeData },

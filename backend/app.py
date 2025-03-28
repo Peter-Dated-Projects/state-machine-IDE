@@ -1,15 +1,23 @@
+import os
+
 from flask import Flask
 from flask_cors import CORS
 
 from api import code_parser_bp
+from api import code_generator_bp
+from dotenv import load_dotenv
 
 
 # --------------------------------------------------- #
+
+# load environment variables
+load_dotenv()
+
 cors_config = {
     "origins": "*",
     # "origins": ["http://localhost:3000"],
     "methods": ["GET", "POST", "PUT", "DELETE"],
-    "allow_headers": ["Content-Type",],# "Authorization"],
+    "allow_headers": ["Content-Type",],  # "Authorization"
     "support_credentials": True,
 }
 
@@ -21,6 +29,7 @@ CORS(app, resources={r"/api/*": cors_config})
 # --------------------------------------------------- #
 
 app.register_blueprint(code_parser_bp.code_parser_bp)
+app.register_blueprint(code_generator_bp.code_generator_bp)
 
 
 # --------------------------------------------------- #

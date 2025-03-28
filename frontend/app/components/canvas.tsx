@@ -34,13 +34,13 @@ interface CanvasProps {
 // object
 export default function CanvasWindow({ props }: CanvasProps) {
   // ------------------------------------- //
-  const [nodes, setNodes] = useNodesState([] as AppNode[]);
-  const [edges, setEdges] = useEdgesState([] as Edge[]);
+  const [nodes, setNodes] = useNodesState([] as LocalNodeObject[]);
+  const [edges, setEdges] = useEdgesState([] as LocalEdgeObject[]);
 
   useEffect(() => {
     // initialize getters
-    if (nodes.length === 0) setNodes(props.nodes.getter as AppNode[]);
-    if (edges.length === 0) setEdges(props.edges.getter as Edge[]);
+    if (nodes.length === 0) setNodes(props.nodes.getter);
+    if (edges.length === 0) setEdges(props.edges.getter);
 
     // update global node & edge storage when local storage changes in CanvasWindow
     props.nodes.setter(nodes);
@@ -95,6 +95,25 @@ export default function CanvasWindow({ props }: CanvasProps) {
 
         // update global edge storage
         mapTemp.delete(edgesToDelete[i].id);
+
+        // update connection data in nodes
+        const sourceNode = props.nodeInformation.activeNodes.getter.get(
+          edgesToDelete[i].source
+        );
+        const targetNode = props.nodeInformation.activeNodes.getter.get(
+          edgesToDelete[i].target
+        );
+
+        if (sourceNode && sourceNode.data) {
+          sourceNode.data.connections = sourceNode.data.connections.filter(
+            (connection) => connection !== edgesToDelete[i].id
+          );
+        }
+        if (targetNode && targetNode.data) {
+          targetNode.data.connections = targetNode.data.connections.filter(
+            (connection) => connection !== edgesToDelete[i].id
+          );
+        }
       }
 
       props.edgeInformation.activeEdges.setter(mapTemp);
@@ -103,6 +122,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
       setEdges,
       props.edgeInformation.activeEdges,
       props.edgeInformation.selectedEdge,
+      props.nodeInformation.activeNodes,
     ]
   );
 
@@ -119,6 +139,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
             type: "base",
             position: { x: 0, y: 0 },
             data: { label: "state", classCode: "", connections: [], color: "" },
+            data: { label: "IdleState", classCode: "", connections: [] },
             props: props,
           }),
           id: "a",
@@ -134,6 +155,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
               connections: [],
               color: "",
             },
+            data: { label: "RunningState", classCode: "", connections: [] },
             props: props,
           }),
           id: "b",
@@ -149,6 +171,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
               connections: [],
               color: "",
             },
+            data: { label: "WalkingState", classCode: "", connections: [] },
             props: props,
           }),
           id: "c",
@@ -164,12 +187,13 @@ export default function CanvasWindow({ props }: CanvasProps) {
               connections: [],
               color: "",
             },
+            data: { label: "DeathState", classCode: "", connections: [] },
             props: props,
           }),
           id: "d",
         },
       ] as LocalNodeObject[];
-      setNodes(defaultNodes as AppNode[]);
+      setNodes(defaultNodes);
 
       console.log(defaultNodes);
 
@@ -183,7 +207,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
       );
 
       // -- also setup edges
-      const defaultEdges: Edge[] = [
+      const defaultEdges: LocalEdgeObject[] = [
         generateLocalEdgeObject({
           id: crypto.randomUUID(),
           source: "a",
@@ -224,8 +248,8 @@ export default function CanvasWindow({ props }: CanvasProps) {
       });
 
       // Set nodes and edges first, then update global state
-      setNodes(defaultNodes as AppNode[]);
-      setEdges(defaultEdges as Edge[]);
+      setNodes(defaultNodes);
+      setEdges(defaultEdges);
 
       // Update global state after setting local state
       props.nodes.setter(defaultNodes);
@@ -308,7 +332,6 @@ export default function CanvasWindow({ props }: CanvasProps) {
 
   const clickedAddNode = useCallback(() => {
     const newNode = generateLocalNodeObject({
-      name: "new node",
       type: "base",
       position:
         typeof window !== "undefined"
@@ -417,10 +440,10 @@ export default function CanvasWindow({ props }: CanvasProps) {
             props.nodeInformation.hoveringNode.setter(node.id);
           }}
           onNodeDoubleClick={(event, node) => {
-            console.log("blah");
             console.log(event, node);
 
-            // TODO - store them in a buffer or something
+            // change sidebar active node to this node
+            props.nodeInformation.activeEditorNode.setter(node.id);
           }}
           onDelete={({ nodes, edges }) => {
             console.log(nodes, edges);
@@ -481,16 +504,15 @@ export default function CanvasWindow({ props }: CanvasProps) {
             }
 
             // Create the edge object, adding the computed animationDirection in its data
-            const newEdge: Edge = {
+            const newEdge: LocalEdgeObject = {
               ...connection,
               id: edgeId,
-              type: "base",
               animated: true,
               data: { animationDirection: flowDirection },
+              sourceHandle: connection.sourceHandle || undefined,
+              targetHandle: connection.targetHandle || undefined,
             };
-
-            // Update ReactFlow edges state
-            setEdges((edges) => addEdge(newEdge, edges));
+            setEdges((edges) => addEdge(newEdge as LocalEdgeObject, edges));
 
             // Also update your global edge state
             const mapTemp = props.edgeInformation.activeEdges.getter;

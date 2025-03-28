@@ -71,9 +71,7 @@ export function BaseNode({
     // We add this class to use the same styles as React Flow's default nodes.
     <div style={{ margin: "0px" }}>
       <div
-        className={`react-flow__node-default ${
-          selected ? styles.selected : ""
-        }`}
+        className={`react-flow__node-default ${selected ? styles.selected : ""}`}
         style={{
           padding: 2,
           zIndex: `${zIndex}`,
@@ -93,6 +91,7 @@ export function BaseNode({
           <div style={{ visibility: "hidden", position: "absolute" }}>{id}</div>
           <div>
             <input
+              className={styles["content-input"]}
               value={labelValue}
               onChange={(e) => {
                 // check if value is null now
@@ -107,6 +106,7 @@ export function BaseNode({
                   bubbles: true,
                   cancelable: true,
                 });
+
                 document.dispatchEvent(newEvent);
               }}
               onClick={(e) => e.stopPropagation()}
@@ -140,9 +140,7 @@ export function BaseNode({
       <div
         style={{
           visibility:
-            data.props.edgeInformation.creatingNewEdge.getter != undefined
-              ? "visible"
-              : "hidden",
+            data.props.edgeInformation.creatingNewEdge.getter != undefined ? "visible" : "hidden",
         }}
       >
         {targetHandles.map((handle) => {
@@ -152,9 +150,7 @@ export function BaseNode({
               position={handle.position}
               type={handle.type}
               id={handle.id}
-              isConnectable={
-                data.props.edgeInformation.creatingNewEdge.getter != id
-              }
+              isConnectable={data.props.edgeInformation.creatingNewEdge.getter != id}
             />
           );
         })}

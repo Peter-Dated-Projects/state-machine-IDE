@@ -8,7 +8,7 @@ from google import genai
 # gemini
 # ---------------------------------------------- #
 
-API_KEY = "UNKNOWN"
+API_KEY = os.environ.get("GENAI_API_KEY")
 GEMINI_MODEL = "gemini-2.0-flash"
 GEMINI_VIDEO_MODEL = "gemini-1.5-pro"
 
