@@ -8,6 +8,7 @@ export type BaseNodeType = Node<
     classCode: string;
     connections: string[];
     color?: string;
+    onNodeDelete?: (nodes: AppNode[]) => void;
   },
   "base"
 >;

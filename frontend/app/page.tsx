@@ -7,6 +7,7 @@ import { ReactFlowProvider, useEdgesState, useNodesState } from "@xyflow/react";
 
 import { LocalEdgeObject } from "./components/edges";
 import { LocalNodeObject } from "./components/nodes";
+import { AppNode } from "./components/nodes/types";
 
 // ------------------------------------------ //
 // Interfaces
@@ -36,6 +37,7 @@ export interface GlobalEdgeInformation {
 }
 
 export interface SharedProgramData {
+  onNodeDelete: (nodes: AppNode[]) => void;
   editorWidth: StateManagerProps<number>;
   nodes: StateManagerProps<LocalNodeObject[]>;
   edges: StateManagerProps<LocalEdgeObject[]>;
@@ -78,15 +80,31 @@ export default function Home() {
   const [edges, setEdges] = useEdgesState([] as LocalEdgeObject[]);
 
   // Shared program state
-  const [selectedNodeData, setSelectedNodeData] = useState<string | undefined>(undefined);
-  const [hoveringNodeData, setHoveringNodeData] = useState<string | undefined>(undefined);
-  const [activeNodesData, setActiveNodesData] = useState<Map<string, LocalNodeObject>>(new Map());
+  const [selectedNodeData, setSelectedNodeData] = useState<string | undefined>(
+    undefined
+  );
+  const [hoveringNodeData, setHoveringNodeData] = useState<string | undefined>(
+    undefined
+  );
+  const [activeNodesData, setActiveNodesData] = useState<
+    Map<string, LocalNodeObject>
+  >(new Map());
 
-  const [selectedEdgeData, setSelectedEdgeData] = useState<string | undefined>(undefined);
-  const [hoveringEdgeData, setHoveringEdgeData] = useState<string | undefined>(undefined);
-  const [activeEdgesData, setActiveEdgesData] = useState<Map<string, LocalEdgeObject>>(new Map());
-  const [creatingNewEdgeData, setCreatingNewEdgeData] = useState<string | undefined>(undefined);
-  const [activeEditorNode, setActiveEditorNode] = useState<string | undefined>(undefined);
+  const [selectedEdgeData, setSelectedEdgeData] = useState<string | undefined>(
+    undefined
+  );
+  const [hoveringEdgeData, setHoveringEdgeData] = useState<string | undefined>(
+    undefined
+  );
+  const [activeEdgesData, setActiveEdgesData] = useState<
+    Map<string, LocalEdgeObject>
+  >(new Map());
+  const [creatingNewEdgeData, setCreatingNewEdgeData] = useState<
+    string | undefined
+  >(undefined);
+  const [activeEditorNode, setActiveEditorNode] = useState<string | undefined>(
+    undefined
+  );
 
   const sharedData: SharedProgramData = {
     editorWidth: { getter: editorWidth, setter: setEditorWidth },
@@ -96,7 +114,10 @@ export default function Home() {
       selectedNode: { getter: selectedNodeData, setter: setSelectedNodeData },
       hoveringNode: { getter: hoveringNodeData, setter: setHoveringNodeData },
       activeNodes: { getter: activeNodesData, setter: setActiveNodesData },
-      activeEditorNode: { getter: activeEditorNode, setter: setActiveEditorNode },
+      activeEditorNode: {
+        getter: activeEditorNode,
+        setter: setActiveEditorNode,
+      },
     },
     edgeInformation: {
       selectedEdge: { getter: selectedEdgeData, setter: setSelectedEdgeData },
@@ -107,6 +128,10 @@ export default function Home() {
         setter: setCreatingNewEdgeData,
       },
     },
+    onNodeDelete: (nodes: AppNode[]) => {
+      // This will be overridden by the Canvas component
+      console.log("Deleting nodes:", nodes);
+    },
   };
 
   // useEffect(() => {
@@ -115,7 +140,10 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.container} style={{ display: "flex", height: "100vh" }}>
+      <div
+        className={styles.container}
+        style={{ display: "flex", height: "100vh" }}
+      >
         {/* Sidebar */}
         <div
           style={{

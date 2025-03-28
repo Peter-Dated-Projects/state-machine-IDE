@@ -8,17 +8,18 @@ interface ContextMenuProps {
   node: AppNode;
   onClose: () => void;
   onColorSelect: (color: string) => void;
+  onNodeDelete: () => void;
 }
 
 const COLORS = [
   "#FF6B6B", // Red
+  "#E67E22", // Orange
+  "#FFEEAD", // Yellow
   "#4ECDC4", // Teal
   "#45B7D1", // Blue
   "#96CEB4", // Green
-  "#FFEEAD", // Yellow
   "#D4A5A5", // Pink
   "#9B59B6", // Purple
-  "#E67E22", // Orange
 ];
 
 export const NodeContextMenu: React.FC<ContextMenuProps> = ({
@@ -27,6 +28,7 @@ export const NodeContextMenu: React.FC<ContextMenuProps> = ({
   node,
   onClose,
   onColorSelect,
+  onNodeDelete,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -43,10 +45,6 @@ export const NodeContextMenu: React.FC<ContextMenuProps> = ({
     };
   }, [onClose]);
 
-  function onDelete() {
-    throw new Error("Function not implemented.");
-  }
-
   return (
     <div
       ref={menuRef}
@@ -60,13 +58,7 @@ export const NodeContextMenu: React.FC<ContextMenuProps> = ({
     >
       <div className={styles.headerContainer}>
         <div className={styles.header}>{node.data.label}</div>
-        <button
-          className={styles.deleteNodeButton}
-          onClick={() => {
-            onDelete();
-            // make delete function off node.data.props.nodeInformation.activeNodes.getter
-          }}
-        >
+        <button className={styles.deleteNodeButton} onClick={onNodeDelete}>
           Delete Node
         </button>
       </div>

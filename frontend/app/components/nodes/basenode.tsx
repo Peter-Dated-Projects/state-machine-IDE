@@ -53,8 +53,8 @@ export function BaseNode({
     const nodeElement = event.currentTarget as HTMLElement;
     const rect = nodeElement.getBoundingClientRect();
     setContextMenu({
-      x: rect.left - 700,
-      y: rect.top - 600, // Position 100px above the node
+      x: rect.left - 800,
+      y: rect.top - 550, // Position 100px above the node
     });
   };
 
@@ -67,11 +67,27 @@ export function BaseNode({
     }
   };
 
+  const handleDeleteNode = () => {
+    setContextMenu(null);
+    // Create a node object that matches the AppNode type
+    const nodeToDelete = {
+      id,
+      type: "base",
+      position: { x: positionAbsoluteX, y: positionAbsoluteY },
+      data: data,
+    } as AppNode;
+
+    // Call onNodeDelete with an array containing the node to delete
+    data.props.onNodeDelete([nodeToDelete]);
+  };
+
   return (
     // We add this class to use the same styles as React Flow's default nodes.
     <div style={{ margin: "0px" }}>
       <div
-        className={`react-flow__node-default ${selected ? styles.selected : ""}`}
+        className={`react-flow__node-default ${
+          selected ? styles.selected : ""
+        }`}
         style={{
           padding: 2,
           zIndex: `${zIndex}`,
@@ -140,7 +156,9 @@ export function BaseNode({
       <div
         style={{
           visibility:
-            data.props.edgeInformation.creatingNewEdge.getter != undefined ? "visible" : "hidden",
+            data.props.edgeInformation.creatingNewEdge.getter != undefined
+              ? "visible"
+              : "hidden",
         }}
       >
         {targetHandles.map((handle) => {
@@ -150,7 +168,9 @@ export function BaseNode({
               position={handle.position}
               type={handle.type}
               id={handle.id}
-              isConnectable={data.props.edgeInformation.creatingNewEdge.getter != id}
+              isConnectable={
+                data.props.edgeInformation.creatingNewEdge.getter != id
+              }
             />
           );
         })}
@@ -165,6 +185,7 @@ export function BaseNode({
           }
           onClose={() => setContextMenu(null)}
           onColorSelect={handleColorSelect}
+          onNodeDelete={handleDeleteNode}
         />
       )}
     </div>

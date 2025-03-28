@@ -1,5 +1,6 @@
 import type { NodeTypes } from "@xyflow/react";
 import { SharedProgramData } from "@/app/page";
+import { AppNode } from "./types";
 
 import { BaseNode } from "./basenode";
 
@@ -15,6 +16,7 @@ export interface LocalNodeObject {
     connections: string[];
     classCode: string;
     color?: string;
+    onNodeDelete?: (nodes: AppNode[]) => void;
   };
 }
 
@@ -27,6 +29,7 @@ interface localNodeGeneratorProps {
     classCode: string;
     connections: string[];
     color?: string;
+    onNodeDelete?: (nodes: AppNode[]) => void;
   };
   props: SharedProgramData;
 }

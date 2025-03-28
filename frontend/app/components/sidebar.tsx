@@ -41,7 +41,14 @@ export interface classInfoProps {
 
 // -------------------------------------------------------------------------- //
 
-const SUPPORTED_LANGUAGES = ["python", "javascript", "typescript", "java", "c++", "c#"];
+const SUPPORTED_LANGUAGES = [
+  "python",
+  "javascript",
+  "typescript",
+  "java",
+  "c++",
+  "c#",
+];
 
 const SideBar: React.FC<SideBarProps> = ({ props }) => {
   const [isSaved, setIsSaved] = useState(true);
@@ -55,7 +62,9 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     return initialMap;
   });
   const [classLanguage, setClassLanguage] = useState("python");
-  const [classVariables, setClassVariables] = useState<BackendQueryVariable[]>([]);
+  const [classVariables, setClassVariables] = useState<BackendQueryVariable[]>(
+    []
+  );
   const [readyToParse, setReadyToParse] = useState(false);
 
   const [nodeData, setNodeData] = useState<NodeData | null>(null);
@@ -96,7 +105,9 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
     // only generates code for current state given user prompt
     const event = new CustomEvent("generatecode", {
       detail: {
-        currentNodeName: props.nodeInformation.activeNodes.getter.get(openAccordion)?.data.label,
+        currentNodeName:
+          props.nodeInformation.activeNodes.getter.get(openAccordion)?.data
+            .label,
         currentNodeCode: nodeCodeMap.get(openAccordion) || "",
         userPrompt: userPrompt,
         language: classLanguage,
@@ -143,9 +154,13 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
   // ------------------------------------- //
   // create a custom event handler for node name changes
   useEffect(() => {
-    const nodeNameChangeEventHandler = (event: CustomEvent<{ nodeid: string; value: string }>) => {
+    const nodeNameChangeEventHandler = (
+      event: CustomEvent<{ nodeid: string; value: string }>
+    ) => {
       // change name of node in activenodes
-      const eNode = props.nodeInformation.activeNodes.getter.get(event.detail.nodeid);
+      const eNode = props.nodeInformation.activeNodes.getter.get(
+        event.detail.nodeid
+      );
       if (eNode) {
         eNode.data.label = event.detail.value;
 
@@ -153,7 +168,10 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
       }
     };
 
-    window.addEventListener(NODE_NAME_CHANGE_EVENT, nodeNameChangeEventHandler as EventListener);
+    window.addEventListener(
+      NODE_NAME_CHANGE_EVENT,
+      nodeNameChangeEventHandler as EventListener
+    );
 
     return () => {
       window.removeEventListener(
@@ -234,14 +252,22 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
       },
       nodeId: "baseClass",
     }),
-    [classLanguage, classVariables, props.editorWidth, isSaved, getNodeCode, setNodeCode]
+    [
+      classLanguage,
+      classVariables,
+      props.editorWidth,
+      isSaved,
+      getNodeCode,
+      setNodeCode,
+    ]
   );
 
   // Parse the class code
   useEffect(() => {
     const handleRequestParsing = () => setReadyToParse(true);
     window.addEventListener("requestparsing", handleRequestParsing);
-    return () => window.removeEventListener("requestparsing", handleRequestParsing);
+    return () =>
+      window.removeEventListener("requestparsing", handleRequestParsing);
   }, []);
 
   // Send the class code to the backend for parsing
@@ -274,7 +300,9 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
       <div className={styles.nodeInfo}>
         <h3>Current Node:</h3>
         <div className={styles.currentNodeDisplay}>
-          {nodeData ? `${nodeData.name} — ${nodeData.type}` : "No Selected Node"}
+          {nodeData
+            ? `${nodeData.name} — ${nodeData.type}`
+            : "No Selected Node"}
         </div>
       </div>
       <section className={styles["editorSection"]}>
@@ -284,14 +312,26 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
           </div>
           <div className={styles["code-editor-language-selector"]}>
             <svg height="17" width="17" style={{ alignSelf: "center" }}>
-              <circle cx="8.5" cy="8.5" r="8" fill={isSaved ? "lightgreen" : "red"} />
+              <circle
+                cx="8.5"
+                cy="8.5"
+                r="8"
+                fill={isSaved ? "lightgreen" : "red"}
+              />
             </svg>
 
-            <Select.Root value={classLanguage} onValueChange={(value) => setClassLanguage(value)}>
+            <Select.Root
+              value={classLanguage}
+              onValueChange={(value) => setClassLanguage(value)}
+            >
               <Select.Trigger style={{ cursor: "pointer" }} />
               <Select.Content position="popper">
                 {SUPPORTED_LANGUAGES.map((language) => (
-                  <Select.Item key={language} value={language} style={{ cursor: "pointer" }}>
+                  <Select.Item
+                    key={language}
+                    value={language}
+                    style={{ cursor: "pointer" }}
+                  >
                     {language}
                   </Select.Item>
                 ))}
@@ -316,61 +356,73 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
               content={<ClassEditor key={"BaseState"} props={baseClassInfo} />}
               value={"baseState"}
             />
-            {Array.from(props.nodeInformation.activeNodes.getter.values()).map((node) => {
-              const nodeClassInfo = {
-                ...baseClassInfo,
-                classCode: {
-                  getter: getNodeCode(node.id),
-                  setter: (code: string) => setNodeCode(node.id, code),
-                },
-                nodeId: node.id,
-              };
-              return (
-                <AccordionItem
-                  key={node.id}
-                  title={`${node.data.label}`}
-                  content={
-                    <div>
-                      <ClassEditor key={`${node.id}-classtab`} props={nodeClassInfo} />
-                      <div className={styles["connections-container"]}>
-                        <h3>Connected Classes</h3>
-                        {node.data.connections.map((connection) => {
-                          const edge = edgeMap.get(connection);
-                          const sourceNode = props.nodes.getter.find(
-                            (node) => node.id === edge?.source
-                          );
-                          const targetNode = props.nodes.getter.find(
-                            (node) => node.id === edge?.target
-                          );
-                          return (
-                            <div key={connection} className={styles["connection"]}>
-                              <button
-                                onClick={() => {
-                                  setOpenAccordion(sourceNode?.id || "");
-                                }}
-                                className={styles["connection-button"]}
+            {Array.from(props.nodeInformation.activeNodes.getter.values()).map(
+              (node) => {
+                const nodeClassInfo = {
+                  ...baseClassInfo,
+                  classCode: {
+                    getter: getNodeCode(node.id),
+                    setter: (code: string) => setNodeCode(node.id, code),
+                  },
+                  nodeId: node.id,
+                };
+                return (
+                  <AccordionItem
+                    key={node.id}
+                    title={`${node.data.label}`}
+                    content={
+                      <div>
+                        <ClassEditor
+                          key={`${node.id}-classtab`}
+                          props={nodeClassInfo}
+                        />
+                        <div className={styles["connections-container"]}>
+                          <h3>Connected Classes</h3>
+                          {node.data.connections.map((connection) => {
+                            const edge = edgeMap.get(connection);
+                            const sourceNode = props.nodes.getter.find(
+                              (node) => node.id === edge?.source
+                            );
+                            const targetNode = props.nodes.getter.find(
+                              (node) => node.id === edge?.target
+                            );
+                            return (
+                              <div
+                                key={connection}
+                                className={styles["connection"]}
                               >
-                                {sourceNode?.data.label}
-                              </button>
-                              <ArrowRightIcon color={sourceNode?.id == node.id ? "green" : "red"} />
-                              <button
-                                onClick={() => {
-                                  setOpenAccordion(targetNode?.id || "");
-                                }}
-                                className={styles["connection-button"]}
-                              >
-                                {targetNode?.data.label}
-                              </button>
-                            </div>
-                          );
-                        })}
+                                <button
+                                  onClick={() => {
+                                    setOpenAccordion(sourceNode?.id || "");
+                                  }}
+                                  className={styles["connection-button"]}
+                                >
+                                  {sourceNode?.data.label}
+                                </button>
+                                <ArrowRightIcon
+                                  color={
+                                    sourceNode?.id == node.id ? "green" : "red"
+                                  }
+                                />
+                                <button
+                                  onClick={() => {
+                                    setOpenAccordion(targetNode?.id || "");
+                                  }}
+                                  className={styles["connection-button"]}
+                                >
+                                  {targetNode?.data.label}
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  }
-                  value={node.id}
-                />
-              );
-            })}
+                    }
+                    value={node.id}
+                  />
+                );
+              }
+            )}
           </Accordion.Root>
         </div>
       </section>
@@ -379,11 +431,18 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
           Save & Generate
         </button>
         <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
-          <Select.Root value={llmModel} onValueChange={(value) => setLlmModel(value)}>
+          <Select.Root
+            value={llmModel}
+            onValueChange={(value) => setLlmModel(value)}
+          >
             <Select.Trigger style={{ cursor: "pointer" }} />
             <Select.Content position="popper">
               {llmModelChoices.map((model) => (
-                <Select.Item key={model} value={model} style={{ cursor: "pointer" }}>
+                <Select.Item
+                  key={model}
+                  value={model}
+                  style={{ cursor: "pointer" }}
+                >
                   {model}
                 </Select.Item>
               ))}
@@ -396,16 +455,24 @@ const SideBar: React.FC<SideBarProps> = ({ props }) => {
         <Dialog.Portal>
           <Dialog.Overlay className={styles["modal-overlay"]} />
           <Dialog.Content className={styles["modal-content"]}>
-            <Dialog.Title className={styles["modal-title"]}>Generate Code</Dialog.Title>
+            <Dialog.Title className={styles["modal-title"]}>
+              Generate Code
+            </Dialog.Title>
             <Dialog.Description className={styles["modal-description"]}>
-              Enter a description for the usage, purpose, and functionality of this state.
+              Enter a description for the usage, purpose, and functionality of
+              this state.
             </Dialog.Description>
             {/* prompt input */}
             <div style={{ marginBottom: "1rem" }}>
               <textarea
                 ref={userPromptRef}
                 placeholder="Enter your prompt here"
-                style={{ width: "100%", padding: "8px", fontSize: "16px", resize: "vertical" }}
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  fontSize: "16px",
+                  resize: "vertical",
+                }}
                 rows={4}
               />
             </div>

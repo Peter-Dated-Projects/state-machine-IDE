@@ -37,20 +37,10 @@ export default function CanvasWindow({ props }: CanvasProps) {
   const [nodes, setNodes] = useNodesState([] as LocalNodeObject[]);
   const [edges, setEdges] = useEdgesState([] as LocalEdgeObject[]);
 
-  useEffect(() => {
-    // initialize getters
-    if (nodes.length === 0) setNodes(props.nodes.getter);
-    if (edges.length === 0) setEdges(props.edges.getter);
-
-    // update global node & edge storage when local storage changes in CanvasWindow
-    props.nodes.setter(nodes);
-    props.edges.setter(edges);
-  }, [nodes, edges, props.nodes, props.edges, setNodes, setEdges]);
-
   // event -- when an "edge" b/t 2 nodes is created
-
   const onNodeDelete = useCallback(
     (deletedNodes: AppNode[]) => {
+      console.log("deleting node");
       console.log("nodedata", deletedNodes);
       const mapTemp = props.nodeInformation.activeNodes.getter;
 
@@ -77,6 +67,19 @@ export default function CanvasWindow({ props }: CanvasProps) {
       props.nodeInformation.selectedNode,
     ]
   );
+
+  useEffect(() => {
+    // initialize getters
+    if (nodes.length === 0) setNodes(props.nodes.getter);
+    if (edges.length === 0) setEdges(props.edges.getter);
+
+    // update global node & edge storage when local storage changes in CanvasWindow
+    props.nodes.setter(nodes);
+    props.edges.setter(edges);
+
+    // Set the onNodeDelete function
+    props.onNodeDelete = onNodeDelete;
+  }, [nodes, edges, props, setNodes, setEdges, onNodeDelete]);
 
   const onEdgeDelete = useCallback(
     (edgesToDelete: Edge[]) => {
@@ -135,64 +138,66 @@ export default function CanvasWindow({ props }: CanvasProps) {
       const defaultNodes = [
         {
           ...generateLocalNodeObject({
-            name: "state",
             type: "base",
             position: { x: 0, y: 0 },
-            data: { label: "state", classCode: "", connections: [], color: "" },
-            data: { label: "IdleState", classCode: "", connections: [] },
+            data: {
+              label: "IdleState",
+              classCode: "",
+              connections: [],
+              color: "",
+              onNodeDelete: (nodes: AppNode[]) => onNodeDelete(nodes),
+            },
             props: props,
           }),
           id: "a",
         },
         {
           ...generateLocalNodeObject({
-            name: "next-state",
             type: "base",
             position: { x: -100, y: 100 },
             data: {
-              label: "state 2",
+              label: "RunningState",
               classCode: "",
               connections: [],
               color: "",
+              onNodeDelete: (nodes: AppNode[]) => onNodeDelete(nodes),
             },
-            data: { label: "RunningState", classCode: "", connections: [] },
             props: props,
           }),
           id: "b",
         },
         {
           ...generateLocalNodeObject({
-            name: "state 3",
             type: "base",
             position: { x: 100, y: 100 },
             data: {
-              label: "state 3",
+              label: "WalkingState",
               classCode: "",
               connections: [],
               color: "",
+              onNodeDelete: (nodes: AppNode[]) => onNodeDelete(nodes),
             },
-            data: { label: "WalkingState", classCode: "", connections: [] },
             props: props,
           }),
           id: "c",
         },
         {
           ...generateLocalNodeObject({
-            name: "next state",
             type: "base",
             position: { x: 0, y: 200 },
             data: {
-              label: "state 4",
+              label: "DeathState",
               classCode: "",
               connections: [],
               color: "",
+              onNodeDelete: (nodes: AppNode[]) => onNodeDelete(nodes),
             },
-            data: { label: "DeathState", classCode: "", connections: [] },
             props: props,
           }),
           id: "d",
         },
       ] as LocalNodeObject[];
+
       setNodes(defaultNodes);
 
       console.log(defaultNodes);
@@ -344,6 +349,7 @@ export default function CanvasWindow({ props }: CanvasProps) {
         label: `new node ${props.nodeInformation.activeNodes.getter.size + 1}`,
         classCode: "",
         connections: [],
+        onNodeDelete: () => onNodeDelete([]),
       },
       props: props,
     });
