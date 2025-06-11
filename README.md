@@ -1,6 +1,6 @@
 # State Machine IDE
 
-<img width="400" alt="stateeditor" src="https://github.com/user-attachments/assets/01b123e3-3827-4821-abd8-841468b015b1" />
+<img width="1000" alt="stateeditor" src="https://github.com/user-attachments/assets/01b123e3-3827-4821-abd8-841468b015b1" />
 
 ## Overview
 
