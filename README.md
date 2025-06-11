@@ -6,6 +6,10 @@
 
 A visual, node-based integrated development environment (IDE) for designing and generating object-oriented state machine code. Users can create complex state transitions using an intuitive graphical interface, and automatically generate Python class definitions through backend AST parsing.
 
+## Idea
+
+This project came out of a simple need—wanting a faster, more visual way to write and test state machines. We kept running into the same bottleneck while switching between diagrams and handwritten Python code. Thus we came up with a tool that lets you draw your logic and get working code instantly. The goal was to make something clean, usable, and helpful for both quick prototyping and long-term projects.
+
 ---
 
 ## Technology Stack
